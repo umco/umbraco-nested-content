@@ -1,0 +1,6 @@
+﻿<div id="{{model.alias}}" ng-controller="Our.Umbraco.NestedContent.Controllers.DocTypePickerController">
+    <select 
+        id="{{model.alias}}_select"
+        ng-options="dt.guid as dt.name for dt in model.docTypes"
+        ng-model="model.value"></select>
+</div>
