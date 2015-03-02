@@ -1,7 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Our.Umbraco.NestedContent.Extensions;
@@ -84,7 +84,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
             public NestedContentPropertyValueEditor(PropertyValueEditor wrapped)
                 : base(wrapped)
             {
-                //Validators.Add(new NestedContentValidator());
+                Validators.Add(new NestedContentValidator());
             }
 
             internal ServiceContext Services
@@ -304,18 +304,28 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                         var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType != null)
                         {
-                            var subEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
-
-                            foreach (var result in editor.ValueEditor.Validators
-                                .SelectMany(v => v.Validate(propValues[propKey], preValues, subEditor)))
+                            // Check mandatory
+                            if (propType.Mandatory)
                             {
-                                yield return result;
+                                if (propValues[propKey] == null)
+                                    yield return new ValidationResult("Item " + (i + 1) + " '" + propType.Name + "' cannot be null", new[] { propKey });
+                                else if(propValues[propKey].ToString().IsNullOrWhiteSpace())
+                                    yield return new ValidationResult("Item " + (i + 1) + " '" + propType.Name + "' cannot be empty", new[] { propKey });
+                            }
+
+                            // Check regex
+                            if (!propType.ValidationRegExp.IsNullOrWhiteSpace() 
+                                && propValues[propKey] != null && !propValues[propKey].ToString().IsNullOrWhiteSpace())
+                            {
+                                var regex = new Regex(propType.ValidationRegExp);
+                                if (!regex.IsMatch(propValues[propKey].ToString()))
+                                {
+                                    yield return new ValidationResult("Item " + (i + 1) + " '" + propType.Name + "' is invalid, it does not match the correct pattern", new[] { propKey });
+                                }
                             }
                         }
                     }
                 }
-
-                yield return new ValidationResult("Oops");
             }
         }
 

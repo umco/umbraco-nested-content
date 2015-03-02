@@ -135,6 +135,15 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                             var tab = node.tabs[t];
                             for (var p = 0; p < tab.properties.length; p++) {
                                 var prop = tab.properties[p];
+
+                                // Force validation to occur server side as this is the 
+                                // only way we can have consistancy between mandatory and
+                                // regex validation messages. Not ideal, but it works.
+                                prop.validation = {
+                                    mandatory: false,
+                                    pattern: ""
+                                };
+
                                 if (item[prop.alias]) {
                                     prop.value = item[prop.alias];
                                 }
