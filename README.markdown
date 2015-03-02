@@ -1,3 +1,3 @@
-# Doc Type Grid Editor
+# Nested Content
 
-A grid editor for Umbraco 7 that allows you to use Doc Types as a blue print for cell data
+A nested content property editor for Umbraco 7 that allows you to use Doc Types as a blue prints for list items
