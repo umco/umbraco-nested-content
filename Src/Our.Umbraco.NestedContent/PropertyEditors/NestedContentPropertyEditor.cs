@@ -304,17 +304,27 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                         var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType != null)
                         {
+                            // It would be better to pass this off to the individual property editors
+                            // to validate themselves and pass the result down, however a lot of the
+                            // validation checking code in core seems to be internal so for now we'll
+                            // just replicate the mandatory / regex validation checks ourselves.
+                            // This does of course mean we will miss any custom validators a property
+                            // editor may have registered by itself, and it also means we can only
+                            // validate to a single depth so having a complex property editor in a 
+                            // doc type could get passed validation if it can't be validated from it's
+                            // stored value alone.
+
                             // Check mandatory
                             if (propType.Mandatory)
                             {
                                 if (propValues[propKey] == null)
                                     yield return new ValidationResult("Item " + (i + 1) + " '" + propType.Name + "' cannot be null", new[] { propKey });
-                                else if(propValues[propKey].ToString().IsNullOrWhiteSpace())
+                                else if (propValues[propKey].ToString().IsNullOrWhiteSpace())
                                     yield return new ValidationResult("Item " + (i + 1) + " '" + propType.Name + "' cannot be empty", new[] { propKey });
                             }
 
                             // Check regex
-                            if (!propType.ValidationRegExp.IsNullOrWhiteSpace() 
+                            if (!propType.ValidationRegExp.IsNullOrWhiteSpace()
                                 && propValues[propKey] != null && !propValues[propKey].ToString().IsNullOrWhiteSpace())
                             {
                                 var regex = new Regex(propType.ValidationRegExp);
