@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Our.Umbraco.NestedContent.Extensions;
@@ -80,9 +81,11 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
         internal class NestedContentPropertyValueEditor : PropertyValueEditorWrapper
         {
-            public NestedContentPropertyValueEditor(PropertyValueEditor wrapped) 
+            public NestedContentPropertyValueEditor(PropertyValueEditor wrapped)
                 : base(wrapped)
-            { }
+            {
+                //Validators.Add(new NestedContentValidator());
+            }
 
             internal ServiceContext Services
             {
@@ -276,6 +279,44 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
             }
 
             #endregion
+        }
+
+        internal class NestedContentValidator : IPropertyValidator
+        {
+            public IEnumerable<ValidationResult> Validate(object rawValue, PreValueCollection preValues, PropertyEditor editor)
+            {
+                var value = JsonConvert.DeserializeObject<List<object>>(rawValue.ToString());
+                if (value == null)
+                    yield break;
+
+                var contentType = NestedContentHelper.GetContentTypeFromPreValue(preValues);
+                if (contentType == null)
+                    yield break;
+
+                for (var i = 0; i < value.Count; i++)
+                {
+                    var o = value[i];
+                    var propValues = ((JObject)o);
+                    var propValueKeys = propValues.Properties().Select(x => x.Name).ToArray();
+
+                    foreach (var propKey in propValueKeys)
+                    {
+                        var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
+                        if (propType != null)
+                        {
+                            var subEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
+
+                            foreach (var result in editor.ValueEditor.Validators
+                                .SelectMany(v => v.Validate(propValues[propKey], preValues, subEditor)))
+                            {
+                                yield return result;
+                            }
+                        }
+                    }
+                }
+
+                yield return new ValidationResult("Oops");
+            }
         }
 
         #endregion
