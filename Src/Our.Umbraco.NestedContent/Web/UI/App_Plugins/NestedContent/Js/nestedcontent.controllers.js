@@ -22,13 +22,15 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
         //$scope.model.config.docTypeGuid;
         //$scope.model.config.tabAlias;
-        //$scope.model.config.labelTemplate;
+        //$scope.model.config.nameTemplate;
         //$scope.model.config.minItems;
         //$scope.model.config.maxItems;
         //console.log($scope);
 
         var inited = false;
-        var labelExp = $interpolate($scope.model.config.labelTemplate);
+        var nameExp = !!$scope.model.config.nameTemplate
+            ? $interpolate($scope.model.config.nameTemplate)
+            : undefined;
 
         $scope.nodes = [];
         $scope.currentNode = undefined;
@@ -74,19 +76,24 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             }
         };
 
-        $scope.getLabel = function (idx) {
+        $scope.getName = function (idx) {
 
-            var label = "Item " + (idx + 1);
+            var name = "Item " + (idx + 1);
 
-            if ($scope.model.config.labelTemplate)
+            if (nameExp)
             {
-                var newLabel = labelExp($scope.model.value[idx]); // Run it against the stored dictionary value, NOT the node object
-                if (newLabel) {
-                    label = newLabel;
+                var newName = nameExp($scope.model.value[idx]); // Run it against the stored dictionary value, NOT the node object
+                if (newName && (newName = $.trim(newName))) {
+                    name = newName;
                 }
             }
 
-            return label;
+            // Update the nodes actual name value
+            if ($scope.nodes[idx].name != newName) {
+                $scope.nodes[idx].name = name;
+            }
+
+            return name;
         };
 
         $scope.sortableOptions = {
@@ -178,7 +185,9 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 var newValues = [];
                 for (var i = 0; i < $scope.nodes.length; i++) {
                     var node = $scope.nodes[i];
-                    var newValue = {};
+                    var newValue = {
+                        name: node.name
+                    };
                     for (var t = 0; t < node.tabs.length; t++) {
                         var tab = node.tabs[t];
                         for (var p = 0; p < tab.properties.length; p++) {

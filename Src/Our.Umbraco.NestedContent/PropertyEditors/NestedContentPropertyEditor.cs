@@ -54,8 +54,8 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
             [PreValueField("tabAlias", "Tab", "textstring", Description = "Enter the alias of the tab whos properties should be displayed. If left blank, the first tab on the doc type will be used.")]
             public string TabAlias { get; set; }
 
-            [PreValueField("labelTemplate", "Label Template", "textstring", Description = "Enter an angular expression to evaluate against each item for its labels.")]
-            public string LabelTemplate { get; set; }
+            [PreValueField("nameTemplate", "Name Template", "textstring", Description = "Enter an angular expression to evaluate against each item for its name.")]
+            public string NameTemplate { get; set; }
 
             [PreValueField("minItems", "Min Items", "number", Description = "Set the minimum number of items allowed.")]
             public string MinItems { get; set; }
@@ -135,8 +135,11 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                         var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType == null)
                         {
-                            // Property missing so just delete the value
-                            propValues[propKey] = null;
+                            if (propKey != "name")
+                            {
+                                // Property missing so just delete the value
+                                propValues[propKey] = null;
+                            }
                         }
                         else
                         {
@@ -190,8 +193,11 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                         var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType == null)
                         {
-                            // Property missing so just delete the value
-                            propValues[propKey] = null;
+                            if (propKey != "name")
+                            {
+                                // Property missing so just delete the value
+                                propValues[propKey] = null;
+                            }
                         }
                         else
                         {
@@ -248,8 +254,11 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                         var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType == null)
                         {
-                            // Property missing so just delete the value
-                            propValues[propKey] = null;
+                            if (propKey != "name")
+                            {
+                                // Property missing so just delete the value
+                                propValues[propKey] = null;
+                            }
                         }
                         else
                         {

@@ -64,7 +64,14 @@ namespace Our.Umbraco.NestedContent.Converters
                                 }
                             }
 
-                            processedValue.Add(new DetachedPublishedContent(null, publishedContentType, properties.ToArray()));
+                            // Parse out the name manually
+                            object nameObj = null;
+                            if (propValues.TryGetValue("name", out nameObj))
+                            {
+                                // Do nothing, we just want to parse out the name if we can
+                            }
+
+                            processedValue.Add(new DetachedPublishedContent(nameObj == null ? null : nameObj.ToString(), publishedContentType, properties.ToArray()));
                         }
 
                         // Detect min/max items == 1 and just return a single IPublishedContent
