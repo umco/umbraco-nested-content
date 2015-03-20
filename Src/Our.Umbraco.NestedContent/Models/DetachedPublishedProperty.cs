@@ -39,7 +39,7 @@ namespace Our.Umbraco.NestedContent.Models
 
         public bool HasValue
         {
-            get { return DataValue.ToString().Trim().Length > 0; }
+            get { return DataValue != null && DataValue.ToString().Trim().Length > 0; }
         }
 
         public object DataValue { get { return _rawValue; } }
