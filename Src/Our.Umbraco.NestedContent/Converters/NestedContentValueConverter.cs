@@ -41,18 +41,23 @@ namespace Our.Umbraco.NestedContent.Converters
                         var processedValue = new List<IPublishedContent>();
 
                         var preValue = NestedContentHelper.GetPreValuesDictionaryByDataTypeId(propertyType.DataTypeId);
-                        var contentType = NestedContentHelper.GetContentTypeFromPreValue(propertyType.DataTypeId);
-                        if (contentType == null)
-                            return null;
-
-                        var publishedContentType = PublishedContentType.Get(PublishedItemType.Content, contentType.Alias);
-                        if (publishedContentType == null)
-                            return null;
 
                         for (var i = 0; i < rawValue.Count; i++)
                         {
-                            var o = rawValue[i];
-                            var propValues = ((JObject)o).ToObject<Dictionary<string, object>>();
+                            var o = (JObject)rawValue[i];
+
+                            var contentTypeAlias = NestedContentHelper.GetContentTypeAliasFromItem(o);
+                            if(string.IsNullOrEmpty(contentTypeAlias))
+                            {
+                                continue;
+                            }
+                            var publishedContentType = PublishedContentType.Get(PublishedItemType.Content, contentTypeAlias);
+                            if(publishedContentType == null)
+                            {
+                                continue;
+                            }
+
+                            var propValues = o.ToObject<Dictionary<string, object>>();
                             var properties = new List<IPublishedProperty>();
 
                             foreach (var jProp in propValues)

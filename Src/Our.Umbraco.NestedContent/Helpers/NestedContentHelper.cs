@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using Our.Umbraco.NestedContent.Extensions;
 using Umbraco.Core;
 using Umbraco.Core.Models;
@@ -24,28 +25,24 @@ namespace Our.Umbraco.NestedContent.Helpers
             return GetPreValuesCollectionByDataTypeId(dtdId).AsPreValueDictionary();
         }
 
-        public static IContentType GetContentTypeFromPreValue(int dtdId)
+        public static string GetContentTypeAliasFromItem(JObject item)
         {
-            var preValueCollection = GetPreValuesCollectionByDataTypeId(dtdId);
-
-            return GetContentTypeFromPreValue(preValueCollection);
+            var contentTypeAliasProperty = item["contentTypeAlias"];
+            if(contentTypeAliasProperty == null)
+            {
+                return null;
+            }
+            return contentTypeAliasProperty.ToObject<string>();
         }
 
-        public static IContentType GetContentTypeFromPreValue(PreValueCollection preValues)
+        public static IContentType GetContentTypeFromItem(JObject item)
         {
-            var preValuesDict = preValues.AsPreValueDictionary();
-
-            Guid contentTypeGuid;
-            if (!preValuesDict.ContainsKey("docTypeGuid") || !Guid.TryParse(preValuesDict["docTypeGuid"], out contentTypeGuid))
+            var contentTypeAlias = GetContentTypeAliasFromItem(item);
+            if(string.IsNullOrEmpty(contentTypeAlias))
+            {
                 return null;
-
-            var contentTypeAlias = ApplicationContext.Current.Services.ContentTypeService.GetAliasByGuid(Guid.Parse(preValuesDict["docTypeGuid"]));
-            var contentType = ApplicationContext.Current.Services.ContentTypeService.GetContentType(contentTypeAlias);
-
-            if (contentType == null || contentType.PropertyTypes == null)
-                return null;
-
-            return contentType;
+            }
+            return ApplicationContext.Current.Services.ContentTypeService.GetContentType(contentTypeAlias);
         }
     }
 }

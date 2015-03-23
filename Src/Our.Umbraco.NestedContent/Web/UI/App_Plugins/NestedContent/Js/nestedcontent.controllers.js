@@ -8,7 +8,6 @@
             $scope.model.docTypes = docTypes;
         });
     }
-
 ]);
 
 angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.NestedContentPropertyEditorController", [
@@ -20,7 +19,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
     function ($scope, $interpolate, contentResource, ncResources) {
 
-        //$scope.model.config.docTypeGuid;
+        //$scope.model.config.docTypeGuids;
         //$scope.model.config.tabAlias;
         //$scope.model.config.nameTemplate;
         //$scope.model.config.minItems;
@@ -34,7 +33,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
         $scope.nodes = [];
         $scope.currentNode = undefined;
-        $scope.scaffold = undefined;
+        $scope.scaffolds = undefined;
         $scope.sorting = false;
 
         $scope.tabAlias = $scope.model.config.tabAlias;
@@ -46,14 +45,63 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
         $scope.singleMode = $scope.minItems == 1 && $scope.maxItems == 1;
 
-        $scope.addNode = function () {
-            if ($scope.nodes.length < $scope.maxItems) {
-                var newNode = angular.copy($scope.scaffold);
-                newNode.id = guid();
+        $scope.overlayMenu = {
+            show: false,
+            style: {}
+        };
 
-                $scope.nodes.push(newNode);
-                $scope.currentNode = newNode;
+        $scope.addNode = function (alias) {
+            var scaffold = $scope.getScaffold(alias);
+            var newNode = angular.copy(scaffold);
+            newNode.id = guid();
+            newNode.contentTypeAlias = alias;
+
+            $scope.nodes.push(newNode);
+            $scope.currentNode = newNode;
+
+            $scope.closeNodeTypePicker();
+        };
+
+        $scope.openNodeTypePicker = function () {
+            if ($scope.nodes.length >= $scope.maxItems) {
+                return;
             }
+
+            // this could be used for future limiting on node types
+            $scope.overlayMenu.scaffolds = [];
+            _.each($scope.scaffolds, function (scaffold) {
+                $scope.overlayMenu.scaffolds.push({
+                    alias: scaffold.contentTypeAlias,
+                    name: scaffold.contentTypeName,
+                    icon: scaffold.icon
+                });
+            });
+
+            if ($scope.overlayMenu.scaffolds.length == 0) {
+                return;
+            }
+
+            if ($scope.overlayMenu.scaffolds.length == 1) {
+                // only one scaffold type - no need to display the picker
+                $scope.addNode($scope.scaffolds[0].contentTypeAlias);
+                return;
+            }
+
+            // calculate overlay position
+            // - yeah... it's jQuery (ungh!) but that's how the Grid does it.
+            var offset = $(event.target).offset();
+            var scrollTop = $(event.target).closest(".umb-panel-body").scrollTop();
+            if (offset.top < 400) {
+                $scope.overlayMenu.style.top = 300 + scrollTop;
+            }
+            else {
+                $scope.overlayMenu.style.top = offset.top - 150 + scrollTop;
+            }
+            $scope.overlayMenu.show = true;
+        };
+
+        $scope.closeNodeTypePicker = function () {
+            $scope.overlayMenu.show = false;
         };
 
         $scope.editNode = function (idx) {
@@ -80,8 +128,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
             var name = "Item " + (idx + 1);
 
-            if (nameExp)
-            {
+            if (nameExp) {
                 var newName = nameExp($scope.model.value[idx]); // Run it against the stored dictionary value, NOT the node object
                 if (newName && (newName = $.trim(newName))) {
                     name = newName;
@@ -121,62 +168,77 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             }
         };
 
+        $scope.getScaffold = function (alias) {
+            return _.find($scope.scaffolds, function (scaffold) {
+                return scaffold.contentTypeAlias == alias;
+            });
+        }
+
         // Initialize
-        ncResources.getContentTypeAliasByGuid($scope.model.config.docTypeGuid).then(function (data1) {
-            contentResource.getScaffold(-20, data1.alias).then(function (data2) {
+        ncResources.getContentTypeAliasesByGuid($scope.model.config.docTypeGuids).then(function (data1) {
+            $scope.scaffolds = [];
+            _.each(data1.aliases, function (alias) {
+                contentResource.getScaffold(-20, alias).then(function (data2) {
+                    // Ignore the generic properties tab
+                    data2.tabs.pop();
 
-                // Ignore the generic properties tab
-                data2.tabs.pop();
+                    // Store the scaffold object
+                    $scope.scaffolds.push(data2);
 
-                // Store the scaffold object
-                $scope.scaffold = data2;
+                    // Initialize when all scaffolds have loaded
+                    if ($scope.scaffolds.length == data1.aliases.length) {
 
-                // Convert stored nodes
-                if ($scope.model.value) {
-                    for (var i = 0; i < $scope.model.value.length; i++) {
-                        var item = $scope.model.value[i];
-                        var node = angular.copy($scope.scaffold);
-                        node.id = guid();
-
-                        for (var t = 0; t < node.tabs.length; t++) {
-                            var tab = node.tabs[t];
-                            for (var p = 0; p < tab.properties.length; p++) {
-                                var prop = tab.properties[p];
-
-                                // Force validation to occur server side as this is the 
-                                // only way we can have consistancy between mandatory and
-                                // regex validation messages. Not ideal, but it works.
-                                prop.validation = {
-                                    mandatory: false,
-                                    pattern: ""
-                                };
-
-                                if (item[prop.alias]) {
-                                    prop.value = item[prop.alias];
+                        // Convert stored nodes
+                        if ($scope.model.value) {
+                            for (var i = 0; i < $scope.model.value.length; i++) {
+                                var item = $scope.model.value[i];
+                                var scaffold = $scope.getScaffold(item.contentTypeAlias);
+                                if (scaffold == null) {
+                                    // No such scaffold - the content type might have been deleted. We need to skip it.
+                                    continue;
                                 }
+                                var node = angular.copy($scope.getScaffold(item.contentTypeAlias));
+                                node.id = guid();
+
+                                for (var t = 0; t < node.tabs.length; t++) {
+                                    var tab = node.tabs[t];
+                                    for (var p = 0; p < tab.properties.length; p++) {
+                                        var prop = tab.properties[p];
+                                        // Force validation to occur server side as this is the 
+                                        // only way we can have consistancy between mandatory and
+                                        // regex validation messages. Not ideal, but it works.
+                                        prop.validation = {
+                                            mandatory: false,
+                                            pattern: ""
+                                        };
+
+                                        if (item[prop.alias]) {
+                                            prop.value = item[prop.alias];
+                                        }
+                                    }
+                                }
+
+                                $scope.nodes.push(node);
                             }
                         }
 
-                        $scope.nodes.push(node);
+                        // Enforce min items
+                        if ($scope.nodes.length < $scope.model.config.minItems) {
+                            for (var i = $scope.nodes.length; i < $scope.model.config.minItems; i++) {
+                                var node = angular.copy($scope.scaffolds[0]);
+                                node.id = guid();
+                                $scope.nodes.push(node);
+                            }
+                        }
+
+                        // If there is only one item, set it as current node
+                        if ($scope.singleMode) {
+                            $scope.currentNode = $scope.nodes[0];
+                        }
+
+                        inited = true;
                     }
-                }
-
-                // Enforce min items
-                if ($scope.nodes.length < $scope.model.config.minItems) {
-                    for (var i = $scope.nodes.length; i < $scope.model.config.minItems; i++) {
-                        var node = angular.copy($scope.scaffold);
-                        node.id = guid();
-                        $scope.nodes.push(node);
-                    }
-                }
-
-                // If there is only one item, set it as current node
-                if ($scope.singleMode) {
-                    $scope.currentNode = $scope.nodes[0];
-                }
-
-                inited = true;
-
+                });
             });
         });
 
@@ -186,7 +248,8 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 for (var i = 0; i < $scope.nodes.length; i++) {
                     var node = $scope.nodes[i];
                     var newValue = {
-                        name: node.name
+                        name: node.name,
+                        contentTypeAlias: node.contentTypeAlias
                     };
                     for (var t = 0; t < node.tabs.length; t++) {
                         var tab = node.tabs[t];
