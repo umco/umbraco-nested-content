@@ -70,10 +70,15 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             // this could be used for future limiting on node types
             $scope.overlayMenu.scaffolds = [];
             _.each($scope.scaffolds, function (scaffold) {
+                var icon = scaffold.icon;
+                // workaround for when no icon is chosen for a doctype
+                if (icon == ".sprTreeFolder") {
+                    icon = "icon-folder";
+                }
                 $scope.overlayMenu.scaffolds.push({
                     alias: scaffold.contentTypeAlias,
                     name: scaffold.contentTypeName,
-                    icon: scaffold.icon
+                    icon: icon
                 });
             });
 
