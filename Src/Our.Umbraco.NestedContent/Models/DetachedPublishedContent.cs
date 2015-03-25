@@ -14,6 +14,9 @@ namespace Our.Umbraco.NestedContent.Models
         private readonly PublishedContentType _contentType;
         private readonly IEnumerable<IPublishedProperty> _properties;
         private readonly bool _isPreviewing;
+        private readonly IPublishedContent _parent = null;
+        private readonly int _sortOrder = 0;
+        private readonly int _level = 0;
 
         public DetachedPublishedContent(string name,
             PublishedContentType contentType,
@@ -81,7 +84,7 @@ namespace Our.Umbraco.NestedContent.Models
 
         public override IPublishedContent Parent
         {
-            get { return null; }
+            get { return _parent; }
         }
 
         public override IEnumerable<IPublishedContent> Children
@@ -96,7 +99,7 @@ namespace Our.Umbraco.NestedContent.Models
 
         public override int SortOrder
         {
-            get { return 0; }
+            get { return _sortOrder; }
         }
 
         public override string UrlName
@@ -146,7 +149,7 @@ namespace Our.Umbraco.NestedContent.Models
 
         public override int Level
         {
-            get { return 0; }
+            get { return _level; }
         }
     }
 }
