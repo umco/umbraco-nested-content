@@ -152,7 +152,7 @@ namespace Our.Umbraco.NestedContent.Models
 
         public override int Level
         {
-            get { return 0; }
+            get { return _parent.Level + 1; }
         }
     }
 }
