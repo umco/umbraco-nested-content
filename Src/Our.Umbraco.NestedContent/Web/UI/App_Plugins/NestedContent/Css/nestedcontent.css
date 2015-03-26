@@ -127,3 +127,19 @@
     background: #f8f8f8;
     border-radius: 15px;
 }
+
+.nested-content .control-label 
+{
+    width: 30%;
+}
+
+.nested-content .controls-row 
+{
+    margin-left: 40% !important;
+}
+
+.nested-content .controls-row .umb-textstring,
+.nested-content .controls-row .umb-textarea
+{
+    width: 95%;
+}
