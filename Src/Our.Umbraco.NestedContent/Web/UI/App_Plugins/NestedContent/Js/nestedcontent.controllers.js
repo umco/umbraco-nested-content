@@ -4,9 +4,28 @@
     "Our.Umbraco.NestedContent.Resources.NestedContentResources",
 
     function ($scope, ncResources) {
+
+        $scope.add = function() {
+            $scope.model.value.push({
+                    alias: "",
+                    tabAlias: "",
+                    nameTemplate: ""
+                }
+            );
+        }
+
+        $scope.remove = function (index) {
+            $scope.model.value.splice(index, 1);
+        }
+
         ncResources.getContentTypes().then(function (docTypes) {
             $scope.model.docTypes = docTypes;
         });
+
+        if (!$scope.model.value) {
+            $scope.model.value = [];
+            $scope.add();
+        }
     }
 ]);
 
@@ -19,24 +38,24 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
     function ($scope, $interpolate, contentResource, ncResources) {
 
-        //$scope.model.config.docTypeGuids;
-        //$scope.model.config.tabAlias;
-        //$scope.model.config.nameTemplate;
+        //$scope.model.config.contentTypes;
         //$scope.model.config.minItems;
         //$scope.model.config.maxItems;
         //console.log($scope);
 
         var inited = false;
-        var nameExp = !!$scope.model.config.nameTemplate
-            ? $interpolate($scope.model.config.nameTemplate)
-            : undefined;
+
+        _.each($scope.model.config.contentTypes, function (contentType) {
+            contentType.nameExp = !!contentType.nameTemplate
+                ? $interpolate(contentType.nameTemplate)
+                : undefined;
+        });
 
         $scope.nodes = [];
         $scope.currentNode = undefined;
         $scope.scaffolds = undefined;
         $scope.sorting = false;
 
-        $scope.tabAlias = $scope.model.config.tabAlias;
         $scope.minItems = $scope.model.config.minItems || 0;
         $scope.maxItems = $scope.model.config.maxItems || 0;
 
@@ -133,8 +152,10 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
             var name = "Item " + (idx + 1);
 
-            if (nameExp) {
-                var newName = nameExp($scope.model.value[idx]); // Run it against the stored dictionary value, NOT the node object
+            var contentType = $scope.getContentTypeConfig($scope.model.value[idx].contentTypeAlias);
+
+            if (contentType.nameExp) {
+                var newName = contentType.nameExp($scope.model.value[idx]); // Run it against the stored dictionary value, NOT the node object
                 if (newName && (newName = $.trim(newName))) {
                     name = newName;
                 }
@@ -179,73 +200,91 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             });
         }
 
+        $scope.getContentTypeConfig = function (alias) {
+            return _.find($scope.model.config.contentTypes, function (contentType) {
+                return contentType.alias == alias;
+            });
+        }
+
         // Initialize
-        ncResources.getContentTypeAliasesByGuid($scope.model.config.docTypeGuids).then(function (data1) {
-            $scope.scaffolds = [];
-            _.each(data1.aliases, function (alias) {
-                contentResource.getScaffold(-20, alias).then(function (data2) {
-                    // Ignore the generic properties tab
-                    data2.tabs.pop();
-
-                    // Store the scaffold object
-                    $scope.scaffolds.push(data2);
-
-                    // Initialize when all scaffolds have loaded
-                    if ($scope.scaffolds.length == data1.aliases.length) {
-
-                        // Convert stored nodes
-                        if ($scope.model.value) {
-                            for (var i = 0; i < $scope.model.value.length; i++) {
-                                var item = $scope.model.value[i];
-                                var scaffold = $scope.getScaffold(item.contentTypeAlias);
-                                if (scaffold == null) {
-                                    // No such scaffold - the content type might have been deleted. We need to skip it.
-                                    continue;
-                                }
-                                var node = angular.copy($scope.getScaffold(item.contentTypeAlias));
-                                node.id = guid();
-
-                                for (var t = 0; t < node.tabs.length; t++) {
-                                    var tab = node.tabs[t];
-                                    for (var p = 0; p < tab.properties.length; p++) {
-                                        var prop = tab.properties[p];
-                                        // Force validation to occur server side as this is the 
-                                        // only way we can have consistancy between mandatory and
-                                        // regex validation messages. Not ideal, but it works.
-                                        prop.validation = {
-                                            mandatory: false,
-                                            pattern: ""
-                                        };
-
-                                        if (item[prop.alias]) {
-                                            prop.value = item[prop.alias];
-                                        }
-                                    }
-                                }
-
-                                $scope.nodes.push(node);
-                            }
-                        }
-
-                        // Enforce min items
-                        if ($scope.nodes.length < $scope.model.config.minItems) {
-                            for (var i = $scope.nodes.length; i < $scope.model.config.minItems; i++) {
-                                var node = angular.copy($scope.scaffolds[0]);
-                                node.id = guid();
-                                $scope.nodes.push(node);
-                            }
-                        }
-
-                        // If there is only one item, set it as current node
-                        if ($scope.singleMode) {
-                            $scope.currentNode = $scope.nodes[0];
-                        }
-
-                        inited = true;
-                    }
+        var scaffoldsLoaded = 0;
+        $scope.scaffolds = [];
+        _.each($scope.model.config.contentTypes, function (contentType) {
+            contentResource.getScaffold(-20, contentType.alias).then(function (scaffold) {
+                // remove all tabs except the specified tab
+                var tab = _.find(scaffold.tabs, function(tab) {
+                    return tab.alias == contentType.tabAlias;
                 });
+                scaffold.tabs = [];
+                if (tab) {
+                    scaffold.tabs.push(tab);
+                }
+
+                // Store the scaffold object
+                $scope.scaffolds.push(scaffold);
+
+                scaffoldsLoaded++;
+                InitIfAllScaffoldsHaveLoaded();
+            }, function(error) {
+                scaffoldsLoaded++;
+                InitIfAllScaffoldsHaveLoaded();
             });
         });
+
+        function InitIfAllScaffoldsHaveLoaded() {
+            // Initialize when all scaffolds have loaded
+            if ($scope.model.config.contentTypes.length == scaffoldsLoaded) {
+                // Convert stored nodes
+                if ($scope.model.value) {
+                    for (var i = 0; i < $scope.model.value.length; i++) {
+                        var item = $scope.model.value[i];
+                        var scaffold = $scope.getScaffold(item.contentTypeAlias);
+                        if (scaffold == null) {
+                            // No such scaffold - the content type might have been deleted. We need to skip it.
+                            continue;
+                        }
+                        var node = angular.copy($scope.getScaffold(item.contentTypeAlias));
+                        node.id = guid();
+
+                        for (var t = 0; t < node.tabs.length; t++) {
+                            var tab = node.tabs[t];
+                            for (var p = 0; p < tab.properties.length; p++) {
+                                var prop = tab.properties[p];
+                                // Force validation to occur server side as this is the 
+                                // only way we can have consistancy between mandatory and
+                                // regex validation messages. Not ideal, but it works.
+                                prop.validation = {
+                                    mandatory: false,
+                                    pattern: ""
+                                };
+
+                                if (item[prop.alias]) {
+                                    prop.value = item[prop.alias];
+                                }
+                            }
+                        }
+
+                        $scope.nodes.push(node);
+                    }
+                }
+
+                // Enforce min items
+                if ($scope.nodes.length < $scope.model.config.minItems) {
+                    for (var i = $scope.nodes.length; i < $scope.model.config.minItems; i++) {
+                        var node = angular.copy($scope.scaffolds[0]);
+                        node.id = guid();
+                        $scope.nodes.push(node);
+                    }
+                }
+
+                // If there is only one item, set it as current node
+                if ($scope.singleMode) {
+                    $scope.currentNode = $scope.nodes[0];
+                }
+
+                inited = true;
+            }
+        }
 
         $scope.$watch("nodes", function () {
             if (inited) {

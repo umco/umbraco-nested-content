@@ -32,7 +32,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
             // Setup default values
             _defaultPreValues = new Dictionary<string, object>
             {
-                {"docTypeGuids", "[]"},
+                {"contentTypes", "[]"},
                 {"minItems", 0},
                 {"maxItems", 0},
                 {"confirmDeletes", 1}
@@ -48,8 +48,8 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
         internal class NestedContentPreValueEditor : PreValueEditor
         {
-            [PreValueField("docTypeGuids", "Doc Types", "/App_Plugins/NestedContent/Views/nestedcontent.doctypepicker.html", Description = "Select the doc types to use as the data blueprint.")]
-            public string[] DocTypeGuids { get; set; }
+            [PreValueField("contentTypes", "Doc Types", "/App_Plugins/NestedContent/Views/nestedcontent.doctypepicker.html", Description = "Select the doc types to use as the data blueprint.")]
+            public string[] ContentTypes { get; set; }
 
             [PreValueField("tabAlias", "Tab", "textstring", Description = "Enter the alias of the tab whos properties should be displayed. If left blank, the first tab on the doc type will be used.")]
             public string TabAlias { get; set; }

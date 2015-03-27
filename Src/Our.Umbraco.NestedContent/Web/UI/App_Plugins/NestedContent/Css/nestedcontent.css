@@ -127,3 +127,8 @@
     background: #f8f8f8;
     border-radius: 15px;
 }
+
+.nested-content__doctypepicker table input, .nested-content__doctypepicker table select {
+  width: 100%;
+  padding-right: 0;
+}
