@@ -51,12 +51,6 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
             [PreValueField("contentTypes", "Doc Types", "/App_Plugins/NestedContent/Views/nestedcontent.doctypepicker.html", Description = "Select the doc types to use as the data blueprint.")]
             public string[] ContentTypes { get; set; }
 
-            [PreValueField("tabAlias", "Tab", "textstring", Description = "Enter the alias of the tab whos properties should be displayed. If left blank, the first tab on the doc type will be used.")]
-            public string TabAlias { get; set; }
-
-            [PreValueField("nameTemplate", "Name Template", "textstring", Description = "Enter an angular expression to evaluate against each item for its name.")]
-            public string NameTemplate { get; set; }
-
             [PreValueField("minItems", "Min Items", "number", Description = "Set the minimum number of items allowed.")]
             public string MinItems { get; set; }
 
@@ -364,7 +358,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
         private static bool IsSystemPropertyKey(string propKey)
         {
-            return propKey == "name" || propKey == "contentTypeAlias";
+            return propKey == "name" || propKey == "ncContentTypeAlias";
         }
 	}
 }

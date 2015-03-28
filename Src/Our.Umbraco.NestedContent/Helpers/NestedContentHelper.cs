@@ -27,7 +27,7 @@ namespace Our.Umbraco.NestedContent.Helpers
 
         public static string GetContentTypeAliasFromItem(JObject item)
         {
-            var contentTypeAliasProperty = item["contentTypeAlias"];
+            var contentTypeAliasProperty = item["ncContentTypeAlias"];
             if(contentTypeAliasProperty == null)
             {
                 return null;

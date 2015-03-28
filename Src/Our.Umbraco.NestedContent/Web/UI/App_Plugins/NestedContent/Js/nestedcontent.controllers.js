@@ -7,8 +7,10 @@
 
         $scope.add = function() {
             $scope.model.value.push({
-                    alias: "",
-                    tabAlias: "",
+                    // As per PR #4, all stored content type aliases must be prefixed "nc" for easier recognition.
+                    // For good measure we'll also prefix the tab alias "nc" 
+                    ncAlias: "",
+                    ncTabAlias: "",
                     nameTemplate: ""
                 }
             );
@@ -17,6 +19,12 @@
         $scope.remove = function (index) {
             $scope.model.value.splice(index, 1);
         }
+
+        $scope.sortableOptions = {
+            axis: 'y',
+            cursor: "move",
+            handle: ".icon-navigation"
+        };
 
         ncResources.getContentTypes().then(function (docTypes) {
             $scope.model.docTypes = docTypes;
@@ -73,7 +81,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             var scaffold = $scope.getScaffold(alias);
             var newNode = angular.copy(scaffold);
             newNode.id = guid();
-            newNode.contentTypeAlias = alias;
+            newNode.ncContentTypeAlias = alias;
 
             $scope.nodes.push(newNode);
             $scope.currentNode = newNode;
@@ -152,9 +160,9 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
             var name = "Item " + (idx + 1);
 
-            var contentType = $scope.getContentTypeConfig($scope.model.value[idx].contentTypeAlias);
+            var contentType = $scope.getContentTypeConfig($scope.model.value[idx].ncContentTypeAlias);
 
-            if (contentType.nameExp) {
+            if (contentType != null && contentType.nameExp) {
                 var newName = contentType.nameExp($scope.model.value[idx]); // Run it against the stored dictionary value, NOT the node object
                 if (newName && (newName = $.trim(newName))) {
                     name = newName;
@@ -202,7 +210,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
         $scope.getContentTypeConfig = function (alias) {
             return _.find($scope.model.config.contentTypes, function (contentType) {
-                return contentType.alias == alias;
+                return contentType.ncAlias == alias;
             });
         }
 
@@ -210,11 +218,11 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
         var scaffoldsLoaded = 0;
         $scope.scaffolds = [];
         _.each($scope.model.config.contentTypes, function (contentType) {
-            contentResource.getScaffold(-20, contentType.alias).then(function (scaffold) {
+            contentResource.getScaffold(-20, contentType.ncAlias).then(function(scaffold) {
                 // remove all tabs except the specified tab
                 var tab = _.find(scaffold.tabs, function(tab) {
-                    return tab.alias == contentType.tabAlias;
-                });
+                    return tab.id != 0 && (tab.alias == contentType.ncTabAlias || contentType.ncTabAlias == "");
+                })
                 scaffold.tabs = [];
                 if (tab) {
                     scaffold.tabs.push(tab);
@@ -238,13 +246,14 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 if ($scope.model.value) {
                     for (var i = 0; i < $scope.model.value.length; i++) {
                         var item = $scope.model.value[i];
-                        var scaffold = $scope.getScaffold(item.contentTypeAlias);
+                        var scaffold = $scope.getScaffold(item.ncContentTypeAlias);
                         if (scaffold == null) {
                             // No such scaffold - the content type might have been deleted. We need to skip it.
                             continue;
                         }
-                        var node = angular.copy($scope.getScaffold(item.contentTypeAlias));
+                        var node = angular.copy(scaffold);
                         node.id = guid();
+                        node.ncContentTypeAlias = item.ncContentTypeAlias;
 
                         for (var t = 0; t < node.tabs.length; t++) {
                             var tab = node.tabs[t];
@@ -293,7 +302,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                     var node = $scope.nodes[i];
                     var newValue = {
                         name: node.name,
-                        contentTypeAlias: node.contentTypeAlias
+                        ncContentTypeAlias: node.ncContentTypeAlias
                     };
                     for (var t = 0; t < node.tabs.length; t++) {
                         var tab = node.tabs[t];

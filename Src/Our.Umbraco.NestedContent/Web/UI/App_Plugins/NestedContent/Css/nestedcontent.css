@@ -129,6 +129,10 @@
 }
 
 .nested-content__doctypepicker table input, .nested-content__doctypepicker table select {
-  width: 100%;
-  padding-right: 0;
+    width: 100%;
+    padding-right: 0;
+}
+
+.nested-content__doctypepicker table td.icon-navigation {
+    vertical-align: middle;
 }

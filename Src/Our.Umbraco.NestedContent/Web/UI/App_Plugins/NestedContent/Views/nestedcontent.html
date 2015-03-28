@@ -24,7 +24,7 @@
                 </div> 
             
                 <div class="nested-content__content" ng-show="$parent.currentNode.id == node.id && !$parent.sorting">
-                    <nested-content-editor ng-model="node" tab-alias="tabAlias" />
+                    <nested-content-editor ng-model="node" tab-alias="ncTabAlias" />
                 </div>
         
             </div>
@@ -47,7 +47,7 @@
                     <localize key="grid_insertControl" />
                 </h5>
                 <ul class="elements">
-                    <li ng-repeat="scaffold in overlayMenu.scaffolds | orderBy: 'name'">
+                    <li ng-repeat="scaffold in overlayMenu.scaffolds">
                         <a ng-click="addNode(scaffold.alias)" href>
                             <i class="icon {{scaffold.icon}}"></i>
                             {{scaffold.name}}

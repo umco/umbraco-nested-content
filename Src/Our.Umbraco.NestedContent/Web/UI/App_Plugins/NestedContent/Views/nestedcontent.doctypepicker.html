@@ -3,6 +3,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th/>
                     <th>
                         Document type
                     </th>
@@ -15,15 +16,17 @@
                     <th />
                 </tr>
             </thead>
-            <tbody>
+            <tbody ui-sortable="sortableOptions" ng-model="model.value">
                 <tr ng-repeat="config in model.value">
+                    <td class="icon icon-navigation">
+                    </td>
                     <td>
                         <select id="{{model.alias}}_select"
                                 ng-options="dt.alias as dt.name for dt in model.docTypes | orderBy: 'name'"
-                                ng-model="config.alias"></select>
+                                ng-model="config.ncAlias" required></select>
                     </td>
                     <td>
-                        <input type="text" ng-model="config.tabAlias" />
+                        <input type="text" ng-model="config.ncTabAlias" />
                     </td>
                     <td>
                         <input type="text" ng-model="config.nameTemplate" />
@@ -36,15 +39,15 @@
         </table>
         <a class="btn" ng-click="add()">Add</a>
     </div>
-    <br />
+    <br/>
     <div class="nested-content__help-text ">
         <p>
-            <b>Tab:</b><br />
-            Enter the alias of the tab who's properties should be displayed. If left blank, the first tab on the doc type will be used.
+            <b>Tab:</b><br/>
+            Enter the alias of the tab who's properties should be displayed. If left blank, the first tab on the doc type will be used.            
         </p>
         <p>
-            <b>Name template:</b><br />
-            Enter an angular expression to evaluate against each item for its name.
+            <b>Name template:</b><br/>
+            Enter an angular expression to evaluate against each item for its name.            
         </p>
     </div>
 </div>
