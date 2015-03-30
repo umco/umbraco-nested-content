@@ -14,7 +14,7 @@
 .nested-content__item--active:not(.nested-content__item--single)
 {
     border-left: 4px solid #dd7f4e;
-	border-top: none;
+    border-top: none;
     margin-left: -4px;
     background: #f8f8f8;
 }
