@@ -16,6 +16,7 @@
 
 	<!-- SHARED PROPERTIES -->
 	<PropertyGroup>
+    <ProjectName>Our.Umbraco.NestedContent</ProjectName>
 		<PackageName>Nested Content</PackageName>
 		<MinUmbracoVersion>7.1.4</MinUmbracoVersion>
 		<Readme>Nested Content is a list editing property editor for Umbraco 7.1+</Readme>
@@ -75,7 +76,7 @@
 		<BuildUmbDir>$(MSBuildProjectDirectory)\_umbraco</BuildUmbDir>
 		<BuildNuGetDir>$(MSBuildProjectDirectory)\_nuget</BuildNuGetDir>
 		<ArtifactsDir>$(RootDir)\artifacts</ArtifactsDir>
-		<CoreProjectDir>$(RootDir)\src\Our.Umbraco.NestedContent</CoreProjectDir>
+    <CoreProjectDir>$(RootDir)\Src\$(ProjectName)</CoreProjectDir>
 	</PropertyGroup>
 
 	<!-- TARGETS -->
@@ -105,14 +106,14 @@
 
   <!-- COMPILE -->
   <Target Name="Compile" DependsOnTargets="UpdateAssemblyInfo">
-    <MSBuild Projects="$(CoreProjectDir)\Our.Umbraco.NestedContent.csproj" Properties="Configuration=$(BuildConfig)"/>
+    <MSBuild Projects="$(CoreProjectDir)\$(ProjectName).csproj" Properties="Configuration=$(BuildConfig)"/>
   </Target>
 
 	<!-- PREPARE FILES -->
 	<Target Name="PrepareFiles" DependsOnTargets="Compile">
 		<ItemGroup>
-			<BinFiles Include="$(CoreProjectDir)\bin\$(BuildConfig)\Our.Umbraco.NestedContent.dll" />
-			<PdbFiles Include="$(CoreProjectDir)\bin\$(BuildConfig)\Our.Umbraco.NestedContent.pdb" />
+			<BinFiles Include="$(CoreProjectDir)\bin\$(BuildConfig)\$(ProjectName).dll" />
+			<PdbFiles Include="$(CoreProjectDir)\bin\$(BuildConfig)\$(ProjectName).pdb" />
 			<SrcFiles Include="$(CoreProjectDir)\**\*.cs" Exclude="$(CoreProjectDir)\obj\**"/>
       <PluginFiles Include="$(CoreProjectDir)\Web\UI\**\*.*" />
       <PackageFile Include="$(MSBuildProjectDirectory)\package.xml" />
