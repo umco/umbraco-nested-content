@@ -36,7 +36,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
             // Setup default values
             _defaultPreValues = new Dictionary<string, object>
             {
-                {NestedContentPreValueEditor.ContentTypesPreValueKey, "[]"},
+                {NestedContentPreValueEditor.ContentTypesPreValueKey, ""},
                 {"minItems", 0},
                 {"maxItems", 0},
                 {"confirmDeletes", 1}
