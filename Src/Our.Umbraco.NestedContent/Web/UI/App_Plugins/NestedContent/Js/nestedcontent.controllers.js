@@ -79,11 +79,9 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
         $scope.addNode = function (alias) {
             var scaffold = $scope.getScaffold(alias);
-            var newNode = angular.copy(scaffold);
-            newNode.id = guid();
-            newNode.ncContentTypeAlias = alias;
 
-            $scope.nodes.push(newNode);
+            var newNode = initNode(scaffold, null);
+
             $scope.currentNode = newNode;
 
             $scope.closeNodeTypePicker();
@@ -232,14 +230,14 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 $scope.scaffolds.push(scaffold);
 
                 scaffoldsLoaded++;
-                InitIfAllScaffoldsHaveLoaded();
+                initIfAllScaffoldsHaveLoaded();
             }, function(error) {
                 scaffoldsLoaded++;
-                InitIfAllScaffoldsHaveLoaded();
+                initIfAllScaffoldsHaveLoaded();
             });
         });
 
-        function InitIfAllScaffoldsHaveLoaded() {
+        var initIfAllScaffoldsHaveLoaded = function() {
             // Initialize when all scaffolds have loaded
             if ($scope.model.config.contentTypes.length == scaffoldsLoaded) {
                 // Convert stored nodes
@@ -251,38 +249,14 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                             // No such scaffold - the content type might have been deleted. We need to skip it.
                             continue;
                         }
-                        var node = angular.copy(scaffold);
-                        node.id = guid();
-                        node.ncContentTypeAlias = item.ncContentTypeAlias;
-
-                        for (var t = 0; t < node.tabs.length; t++) {
-                            var tab = node.tabs[t];
-                            for (var p = 0; p < tab.properties.length; p++) {
-                                var prop = tab.properties[p];
-                                // Force validation to occur server side as this is the 
-                                // only way we can have consistancy between mandatory and
-                                // regex validation messages. Not ideal, but it works.
-                                prop.validation = {
-                                    mandatory: false,
-                                    pattern: ""
-                                };
-
-                                if (item[prop.alias]) {
-                                    prop.value = item[prop.alias];
-                                }
-                            }
-                        }
-
-                        $scope.nodes.push(node);
+                        initNode(scaffold, item);
                     }
                 }
 
                 // Enforce min items
                 if ($scope.nodes.length < $scope.model.config.minItems) {
                     for (var i = $scope.nodes.length; i < $scope.model.config.minItems; i++) {
-                        var node = angular.copy($scope.scaffolds[0]);
-                        node.id = guid();
-                        $scope.nodes.push(node);
+                        $scope.addNode($scope.scaffolds[0].contentTypeAlias);
                     }
                 }
 
@@ -293,6 +267,36 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
                 inited = true;
             }
+        }
+
+        var initNode = function (scaffold, item) {
+            var node = angular.copy(scaffold);
+
+            node.id = guid();
+            node.ncContentTypeAlias = scaffold.contentTypeAlias;
+
+            for (var t = 0; t < node.tabs.length; t++) {
+                var tab = node.tabs[t];
+                for (var p = 0; p < tab.properties.length; p++) {
+                    var prop = tab.properties[p];
+                    // Force validation to occur server side as this is the 
+                    // only way we can have consistancy between mandatory and
+                    // regex validation messages. Not ideal, but it works.
+                    prop.validation = {
+                        mandatory: false,
+                        pattern: ""
+                    };
+                    if (item) {
+                        if (item[prop.alias]) {
+                            prop.value = item[prop.alias];
+                        }
+                    }
+                }
+            }
+
+            $scope.nodes.push(node);
+
+            return node;
         }
 
         $scope.$watch("nodes", function () {
