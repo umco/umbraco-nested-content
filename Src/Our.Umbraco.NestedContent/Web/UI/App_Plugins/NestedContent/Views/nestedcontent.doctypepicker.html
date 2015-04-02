@@ -37,10 +37,13 @@
                 </tr>
             </tbody>
         </table>
-        <a class="btn" ng-click="add()">Add</a>
+        <div>
+            <a class="btn" ng-click="add()">Add</a>
+            <i class="icon icon-help-alt medium nested-content__help-icon" ng-click="showHelpText = !showHelpText"></i>
+        </div>
     </div>
     <br/>
-    <div class="nested-content__help-text ">
+    <div class="nested-content__help-text" ng-show="showHelpText">
         <p>
             <b>Tab:</b><br/>
             Enter the alias of the tab who's properties should be displayed. If left blank, the first tab on the doc type will be used.            
