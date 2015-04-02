@@ -41,10 +41,11 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
     "$scope",
     "$interpolate",
+    "$filter",
     "contentResource",
     "Our.Umbraco.NestedContent.Resources.NestedContentResources",
 
-    function ($scope, $interpolate, contentResource, ncResources) {
+    function ($scope, $interpolate, $filter, contentResource, ncResources) {
 
         //$scope.model.config.contentTypes;
         //$scope.model.config.minItems;
@@ -240,6 +241,16 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
         var initIfAllScaffoldsHaveLoaded = function() {
             // Initialize when all scaffolds have loaded
             if ($scope.model.config.contentTypes.length == scaffoldsLoaded) {
+                // Because we're loading the scaffolds async one at a time, we need to 
+                // sort them explicitly according to the sort order defined by the data type.
+                var contentTypeAliases = [];
+                _.each($scope.model.config.contentTypes, function(contentType) {
+                    contentTypeAliases.push(contentType.ncAlias);
+                });
+                $scope.scaffolds = $filter('orderBy')($scope.scaffolds, function (s) {
+                    return contentTypeAliases.indexOf(s.contentTypeAlias);
+                });
+
                 // Convert stored nodes
                 if ($scope.model.value) {
                     for (var i = 0; i < $scope.model.value.length; i++) {
