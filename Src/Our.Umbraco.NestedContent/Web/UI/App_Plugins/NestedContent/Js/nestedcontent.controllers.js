@@ -88,7 +88,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             $scope.closeNodeTypePicker();
         };
 
-        $scope.openNodeTypePicker = function () {
+        $scope.openNodeTypePicker = function (event) {
             if ($scope.nodes.length >= $scope.maxItems) {
                 return;
             }
