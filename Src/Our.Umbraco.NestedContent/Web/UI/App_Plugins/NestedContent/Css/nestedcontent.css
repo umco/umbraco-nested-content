@@ -11,6 +11,14 @@
     background: white;
 }
 
+.nested-content__item--active:not(.nested-content__item--single)
+{
+    border-left: 4px solid #dd7f4e;
+    border-top: none;
+    margin-left: -4px;
+    background: #f8f8f8;
+}
+
 .nested-content__item.ui-sortable-placeholder 
 {
     background: #f8f8f8;
@@ -35,6 +43,7 @@
     padding: 15px 20px; 
     border-bottom: 1px dashed #e0e0e0;
     text-align: right;
+    cursor: pointer;
 }
 
 .nested-content__heading
@@ -144,4 +153,20 @@
 
 .nested-content__doctypepicker i.nested-content__help-icon {
     margin-left: 10px;
+}
+
+.form-horizontal .nested-content .control-label 
+{
+    width: 30%;
+}
+
+.form-horizontal .nested-content .controls-row 
+{
+    margin-left: 40% !important;
+}
+
+.form-horizontal .nested-content .controls-row .umb-textstring,
+.form-horizontal .nested-content .controls-row .umb-textarea
+{
+    width: 95%;
 }
