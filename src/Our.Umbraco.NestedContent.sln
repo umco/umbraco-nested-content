@@ -6,25 +6,26 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{CEE9961C-D747-40CD-B0B2-868D6B46833E}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{D588B45D-9E67-4136-8271-2B8724C8165F}"
-	ProjectSection(SolutionItems) = preProject
-		README.markdown = README.markdown
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.NestedContent", "Src\Our.Umbraco.NestedContent\Our.Umbraco.NestedContent.csproj", "{641D5625-F5B4-4B23-875A-4233C507F37D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.NestedContent", "Our.Umbraco.NestedContent\Our.Umbraco.NestedContent.csproj", "{641D5625-F5B4-4B23-875A-4233C507F37D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build Package", "Build Package", "{F74D7367-2138-4CC2-BD71-22C514BC451C}"
 	ProjectSection(SolutionItems) = preProject
-		appveyor.yml = appveyor.yml
-		build-appveyor.cmd = build-appveyor.cmd
-		build.cmd = build.cmd
-		Build\package.nuspec = Build\package.nuspec
-		Build\package.proj = Build\package.proj
-		Build\package.xml = Build\package.xml
+		..\appveyor.yml = ..\appveyor.yml
+		..\build-appveyor.cmd = ..\build-appveyor.cmd
+		..\build.cmd = ..\build.cmd
+		..\build\package.nuspec = ..\build\package.nuspec
+		..\build\package.proj = ..\build\package.proj
+		..\build\package.xml = ..\build\package.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2E1F9B00-9D88-460A-8F74-43F517DD913C}"
+	ProjectSection(SolutionItems) = preProject
+		..\CONTRIBUTING.md = ..\CONTRIBUTING.md
+		..\LICENSE.md = ..\LICENSE.md
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Global
@@ -40,5 +41,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CEE9961C-D747-40CD-B0B2-868D6B46833E} = {2E1F9B00-9D88-460A-8F74-43F517DD913C}
+		{F74D7367-2138-4CC2-BD71-22C514BC451C} = {2E1F9B00-9D88-460A-8F74-43F517DD913C}
 	EndGlobalSection
 EndGlobal
