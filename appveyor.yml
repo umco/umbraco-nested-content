@@ -16,7 +16,7 @@ artifacts:
 deploy:
      # MyGet Deployment for builds & releases
   - provider: NuGet
-    server: https://www.myget.org/F/umbraco-nested-content/api/v2
+    server: https://www.myget.org/F/umbraco-nested-content/
     symbol_server: https://nuget.symbolsource.org/MyGet/umbraco-nested-content
     api_key:
       secure: Q1/4K8VSwr7BjwmKDTef8y5lOc7S+jK9ELuWy67y6OVRpjxmnF9M3Gfs1kT+ir8x
