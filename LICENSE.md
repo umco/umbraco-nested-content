@@ -1,4 +1,4 @@
-Copyright (c) 2011 Umbraco Community
+Copyright &copy; 2014 Umbrella Inc, Our Umbraco and other contributors
 
 This software consists of voluntary contributions made by Umbraco
 Community (https://bitbucket.org/mattbrailsford/ugolive) For exact
