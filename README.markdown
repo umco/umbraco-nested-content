@@ -30,7 +30,7 @@ To [install from NuGet](https://www.nuget.org/packages/Our.Umbraco.NestedContent
 
 	PM> Install-Package Our.Umbraco.NestedContent
 
-We also have a [MyGet package repository](https://www.myget.org/F/umbraco-nested-content/) - for bleeding-edge / development releases.
+We also have a [MyGet package repository](https://www.myget.org/gallery/umbraco-nested-content) - for bleeding-edge / development releases.
 
 #### Manual build
 
