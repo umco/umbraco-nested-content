@@ -38,6 +38,8 @@ bin/
 */Thumbs.db
 */log.txt
 /Assets/
-/Build/
+/Build/_nuget/*
+/Build/_umbraco/*
 *.DS_Store
 [Pp]ackages/*/**
+artifacts/
