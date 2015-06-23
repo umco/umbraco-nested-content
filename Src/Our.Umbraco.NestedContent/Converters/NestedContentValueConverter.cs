@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Our.Umbraco.NestedContent.Extensions;
 using Our.Umbraco.NestedContent.Helpers;
 using Our.Umbraco.NestedContent.Models;
 using Our.Umbraco.NestedContent.PropertyEditors;
@@ -40,19 +41,31 @@ namespace Our.Umbraco.NestedContent.Converters
                         var rawValue = JsonConvert.DeserializeObject<List<object>>(source.ToString());
                         var processedValue = new List<IPublishedContent>();
 
-                        var preValue = NestedContentHelper.GetPreValuesDictionaryByDataTypeId(propertyType.DataTypeId);
-                        var contentType = NestedContentHelper.GetContentTypeFromPreValue(propertyType.DataTypeId);
-                        if (contentType == null)
-                            return null;
-
-                        var publishedContentType = PublishedContentType.Get(PublishedItemType.Content, contentType.Alias);
-                        if (publishedContentType == null)
-                            return null;
+	                    var preValueCollection = NestedContentHelper.GetPreValuesCollectionByDataTypeId(propertyType.DataTypeId);
+						var preValueDictionary = preValueCollection.AsPreValueDictionary();
 
                         for (var i = 0; i < rawValue.Count; i++)
                         {
-                            var o = rawValue[i];
-                            var propValues = ((JObject)o).ToObject<Dictionary<string, object>>();
+                            var o = (JObject)rawValue[i];
+
+                            // convert from old style (v.0.1.1) data format if necessary
+                            // - please note: This call has virtually no impact on rendering performance for new style (>v0.1.1).
+                            //                Even so, this should be removed eventually, when it's safe to assume that there is
+                            //                no longer any need for conversion.
+                            NestedContentHelper.ConvertItemValueFromV011(o, propertyType.DataTypeId, ref preValueCollection);
+
+                            var contentTypeAlias = NestedContentHelper.GetContentTypeAliasFromItem(o);
+                            if(string.IsNullOrEmpty(contentTypeAlias))
+                            {
+                                continue;
+                            }
+                            var publishedContentType = PublishedContentType.Get(PublishedItemType.Content, contentTypeAlias);
+                            if(publishedContentType == null)
+                            {
+                                continue;
+                            }
+
+                            var propValues = o.ToObject<Dictionary<string, object>>();
                             var properties = new List<IPublishedProperty>();
 
                             foreach (var jProp in propValues)
@@ -76,8 +89,8 @@ namespace Our.Umbraco.NestedContent.Converters
 
                         // Detect min/max items == 1 and just return a single IPublishedContent
                         int minItems, maxItems;
-                        if (preValue.ContainsKey("minItems") && int.TryParse(preValue["minItems"], out minItems) && minItems == 1
-                            && preValue.ContainsKey("maxItems") && int.TryParse(preValue["maxItems"], out maxItems) && maxItems == 1)
+                        if (preValueDictionary.ContainsKey("minItems") && int.TryParse(preValueDictionary["minItems"], out minItems) && minItems == 1
+                            && preValueDictionary.ContainsKey("maxItems") && int.TryParse(preValueDictionary["maxItems"], out maxItems) && maxItems == 1)
                         {
                             return processedValue.FirstOrDefault();
                         }

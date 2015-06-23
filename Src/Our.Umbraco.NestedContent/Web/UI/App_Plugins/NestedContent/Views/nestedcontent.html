@@ -24,7 +24,7 @@
                 </div> 
             
                 <div class="nested-content__content" ng-show="$parent.currentNode.id == node.id && !$parent.sorting">
-                    <nested-content-editor ng-model="node" tab-alias="tabAlias" />
+                    <nested-content-editor ng-model="node" tab-alias="ncTabAlias" />
                 </div>
         
             </div>
@@ -36,9 +36,25 @@
         </div>
 
         <div class="nested-content__footer-bar" ng-hide="nodes.length >= maxItems">
-            <a class="nested-content__icon" ng-click="addNode()" prevent-default>
+            <a class="nested-content__icon" ng-click="openNodeTypePicker($event)" prevent-default>
                 <i class=" icon icon-add"></i>
             </a>
+        </div>
+
+        <div class="usky-grid" ng-if="overlayMenu.show">
+            <div class="cell-tools-menu" ng-style="overlayMenu.style" delayed-mouseleave="closeNodeTypePicker()">
+                <h5>
+                    <localize key="grid_insertControl" />
+                </h5>
+                <ul class="elements">
+                    <li ng-repeat="scaffold in overlayMenu.scaffolds">
+                        <a ng-click="addNode(scaffold.alias)" href>
+                            <i class="icon {{scaffold.icon}}"></i>
+                            {{scaffold.name}}
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
 
     </ng-form>

@@ -137,6 +137,24 @@
     border-radius: 15px;
 }
 
+.nested-content__doctypepicker table input, .nested-content__doctypepicker table select {
+    width: 100%;
+    padding-right: 0;
+}
+
+.nested-content__doctypepicker table td.icon-navigation, .nested-content__doctypepicker i.nested-content__help-icon {
+    vertical-align: middle;
+    color: #CCC;
+}
+
+.nested-content__doctypepicker table td.icon-navigation:hover, .nested-content__doctypepicker i.nested-content__help-icon:hover {
+    color: #343434;
+}
+
+.nested-content__doctypepicker i.nested-content__help-icon {
+    margin-left: 10px;
+}
+
 .form-horizontal .nested-content .control-label 
 {
     width: 30%;
