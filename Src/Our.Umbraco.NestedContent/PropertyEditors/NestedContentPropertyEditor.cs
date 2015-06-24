@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
@@ -11,6 +12,7 @@ using Umbraco.Core.Models;
 using Umbraco.Core.Models.Editors;
 using Umbraco.Core.PropertyEditors;
 using Umbraco.Core.Services;
+using umbraco.editorControls.SettingControls;
 using Umbraco.Web.PropertyEditors;
 
 namespace Our.Umbraco.NestedContent.PropertyEditors
@@ -18,6 +20,8 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
     [PropertyEditor(NestedContentPropertyEditor.PropertyEditorAlias, "Nested Content", "/App_Plugins/NestedContent/Views/nestedcontent.html", ValueType = "JSON")]
     public class NestedContentPropertyEditor : PropertyEditor
     {
+        internal const string ContentTypeAliasPropertyKey = "ncContentTypeAlias";
+
         public const string PropertyEditorAlias = "Our.Umbraco.NestedContent";
 
         private IDictionary<string, object> _defaultPreValues;
@@ -32,7 +36,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
             // Setup default values
             _defaultPreValues = new Dictionary<string, object>
             {
-                {"docTypeGuid", ""},
+                {NestedContentPreValueEditor.ContentTypesPreValueKey, ""},
                 {"minItems", 0},
                 {"maxItems", 0},
                 {"confirmDeletes", 1}
@@ -48,14 +52,10 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
         internal class NestedContentPreValueEditor : PreValueEditor
         {
-            [PreValueField("docTypeGuid", "Doc Type", "/App_Plugins/NestedContent/Views/nestedcontent.doctypepicker.html", Description = "Select the doc type to use as the data blueprint.")]
-            public string DocTypeGuid { get; set; }
+            internal const string ContentTypesPreValueKey = "contentTypes";
 
-            [PreValueField("tabAlias", "Tab", "textstring", Description = "Enter the alias of the tab whos properties should be displayed. If left blank, the first tab on the doc type will be used.")]
-            public string TabAlias { get; set; }
-
-            [PreValueField("nameTemplate", "Name Template", "textstring", Description = "Enter an angular expression to evaluate against each item for its name.")]
-            public string NameTemplate { get; set; }
+            [PreValueField(ContentTypesPreValueKey, "Doc Types", "/App_Plugins/NestedContent/Views/nestedcontent.doctypepicker.html", Description = "Select the doc types to use as the data blueprint.")]
+            public string[] ContentTypes { get; set; }
 
             [PreValueField("minItems", "Min Items", "number", Description = "Set the minimum number of items allowed.")]
             public string MinItems { get; set; }
@@ -68,6 +68,14 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
             [PreValueField("hideLabel", "Hide Label", "boolean", Description = "Set whether to hide the editor label and have the list take up the full width of the editor window.")]
             public string HideLabel { get; set; }
+
+            public override IDictionary<string, object> ConvertDbToEditor(IDictionary<string, object> defaultPreVals, PreValueCollection persistedPreVals)
+            {
+                // re-format old style (v0.1.1) pre values if necessary
+                NestedContentHelper.ConvertPreValueCollectionFromV011(persistedPreVals);
+
+                return base.ConvertDbToEditor(defaultPreVals, persistedPreVals);
+            }
         }
 
         #endregion
@@ -119,15 +127,22 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                 if (value == null)
                     return string.Empty;
 
-                var contentType = NestedContentHelper.GetContentTypeFromPreValue(propertyType.DataTypeDefinitionId);
-                if (contentType == null)
-                    return string.Empty;
-
                 // Process value
-                for (var i = 0; i < value.Count; i++)
+                PreValueCollection preValues = null;
+                for(var i = 0; i < value.Count; i++)
                 {
                     var o = value[i];
                     var propValues = ((JObject)o);
+
+                    // convert from old style (v0.1.1) data format if necessary
+                    NestedContentHelper.ConvertItemValueFromV011(propValues, propertyType.DataTypeDefinitionId, ref preValues);
+
+                    var contentType = NestedContentHelper.GetContentTypeFromItem(propValues);
+                    if(contentType == null)
+                    {
+                        continue;
+                    }
+
                     var propValueKeys = propValues.Properties().Select(x => x.Name).ToArray();
 
                     foreach (var propKey in propValueKeys)
@@ -135,7 +150,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                         var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType == null)
                         {
-                            if (propKey != "name")
+                            if(IsSystemPropertyKey(propKey) == false)
                             {
                                 // Property missing so just delete the value
                                 propValues[propKey] = null;
@@ -177,15 +192,22 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                 if (value == null)
                     return string.Empty;
 
-                var contentType = NestedContentHelper.GetContentTypeFromPreValue(propertyType.DataTypeDefinitionId);
-                if (contentType == null)
-                    return string.Empty;
-
                 // Process value
-                for (var i = 0; i < value.Count; i++)
+                PreValueCollection preValues = null;
+                for(var i = 0; i < value.Count; i++)
                 {
                     var o = value[i];
                     var propValues = ((JObject)o);
+
+                    // convert from old style (v0.1.1) data format if necessary
+                    NestedContentHelper.ConvertItemValueFromV011(propValues, propertyType.DataTypeDefinitionId, ref preValues);
+
+                    var contentType = NestedContentHelper.GetContentTypeFromItem(propValues);
+                    if(contentType == null)
+                    {
+                        continue;
+                    }
+
                     var propValueKeys = propValues.Properties().Select(x => x.Name).ToArray();
 
                     foreach (var propKey in propValueKeys)
@@ -193,7 +215,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                         var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType == null)
                         {
-                            if (propKey != "name")
+                            if(IsSystemPropertyKey(propKey) == false)
                             {
                                 // Property missing so just delete the value
                                 propValues[propKey] = null;
@@ -238,15 +260,18 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                 if (value == null)
                     return string.Empty;
 
-                var contentType = NestedContentHelper.GetContentTypeFromPreValue(editorValue.PreValues);
-                if (contentType == null)
-                    return string.Empty;
-
                 // Process value
                 for (var i = 0; i < value.Count; i++)
                 {
                     var o = value[i];
                     var propValues = ((JObject)o);
+
+                    var contentType = NestedContentHelper.GetContentTypeFromItem(propValues);
+                    if(contentType == null)
+                    {
+                        continue;
+                    }
+
                     var propValueKeys = propValues.Properties().Select(x => x.Name).ToArray();
 
                     foreach (var propKey in propValueKeys)
@@ -254,7 +279,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                         var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType == null)
                         {
-                            if (propKey != "name")
+                            if(IsSystemPropertyKey(propKey) == false)
                             {
                                 // Property missing so just delete the value
                                 propValues[propKey] = null;
@@ -298,14 +323,17 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                 if (value == null)
                     yield break;
 
-                var contentType = NestedContentHelper.GetContentTypeFromPreValue(preValues);
-                if (contentType == null)
-                    yield break;
-
                 for (var i = 0; i < value.Count; i++)
                 {
                     var o = value[i];
                     var propValues = ((JObject)o);
+
+                    var contentType = NestedContentHelper.GetContentTypeFromItem(propValues);
+                    if(contentType == null)
+                    {
+                        continue;
+                    }
+
                     var propValueKeys = propValues.Properties().Select(x => x.Name).ToArray();
 
                     foreach (var propKey in propValueKeys)
@@ -349,5 +377,10 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
         }
 
         #endregion
-    }
+
+        private static bool IsSystemPropertyKey(string propKey)
+        {
+            return propKey == "name" || propKey == ContentTypeAliasPropertyKey;
+        }
+	}
 }

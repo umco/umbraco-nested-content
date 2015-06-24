@@ -17,9 +17,6 @@ namespace Our.Umbraco.NestedContent
             foreach (var dataType in e.SavedEntities)
             {
                 ApplicationContext.Current.ApplicationCache.RuntimeCache.ClearCacheItem(
-                    string.Concat("Our.Umbraco.NestedContent.GetContentTypeAliasByGuid_", dataType.Key));
-
-                ApplicationContext.Current.ApplicationCache.RuntimeCache.ClearCacheItem(
                     string.Concat("Our.Umbraco.NestedContent.GetPreValuesCollectionByDataTypeId_", dataType.Id));
             }
         }

@@ -12,15 +12,6 @@ namespace Our.Umbraco.NestedContent.Web.Controllers
     public class NestedContentApiController : UmbracoAuthorizedJsonController
     {
         [System.Web.Http.HttpGet]
-        public object GetContentTypeAliasByGuid([ModelBinder] Guid guid)
-        {
-            return new
-            {
-                alias = Services.ContentTypeService.GetAliasByGuid(guid)
-            };
-        }
-
-        [System.Web.Http.HttpGet]
         public IEnumerable<object> GetContentTypes()
         {
             return Services.ContentTypeService.GetAllContentTypes()
