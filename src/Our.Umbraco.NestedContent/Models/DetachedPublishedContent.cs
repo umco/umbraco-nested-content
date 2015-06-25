@@ -13,16 +13,19 @@ namespace Our.Umbraco.NestedContent.Models
         private readonly string _name;
         private readonly PublishedContentType _contentType;
         private readonly IEnumerable<IPublishedProperty> _properties;
+        private readonly int _sortOrder;
         private readonly bool _isPreviewing;
 
         public DetachedPublishedContent(string name,
             PublishedContentType contentType,
             IEnumerable<IPublishedProperty> properties,
+            int sortOrder = 0,
             bool isPreviewing = false)
         {
             _name = name;
             _contentType = contentType;
             _properties = properties;
+            _sortOrder = sortOrder;
             _isPreviewing = isPreviewing;
         }
 
@@ -96,7 +99,7 @@ namespace Our.Umbraco.NestedContent.Models
 
         public override int SortOrder
         {
-            get { return 0; }
+            get { return _sortOrder; }
         }
 
         public override string UrlName
