@@ -9,7 +9,6 @@
 A nested content property editor for Umbraco 7 that allows you to use Doc Types as a blue print for list items.
 
 
-
 ## Getting Started
 
 ### Installation
@@ -44,6 +43,13 @@ To clone it locally click the "Clone in Windows" button above or run the followi
 	cd umbraco-nested-content
 	.\build.cmd
 
+---
+
+## Developers Guide
+
+For details on how to use the Nested Content package, please refer to our [Developers Guide](docs/developers-guide.md) documentation.
+
+A PDF download is also available: [Nested Content - Developers Guide v1.0.pdf](docs/assets/pdf/Nested-Content--Developers-Guide-v1.0.pdf)
 
 ---
 
