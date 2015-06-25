@@ -2,7 +2,7 @@
 
 ### Contents
 
-1. [Introduction](#introduction]
+1. [Introduction](#introduction)
 2. [Getting Set Up](#getting-set-up)
   * [System Requirements](#system-requirements)
 3. [Configuring Nested Content](#configuring-nested-content)
