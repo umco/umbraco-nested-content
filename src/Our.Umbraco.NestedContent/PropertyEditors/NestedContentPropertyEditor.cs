@@ -296,7 +296,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
                             // Create a fake content property data object
                             var contentPropData = new ContentPropertyData(
-                                propValues[propKey] == null ? null : propValues[propKey].ToString(), propPreValues,
+                                propValues[propKey] == propValues[propKey], propPreValues,
                                 new Dictionary<string, object>());
 
                             // Get the property editor to do it's conversion
