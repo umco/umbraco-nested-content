@@ -13,7 +13,7 @@
 
 .nested-content__item--active:not(.nested-content__item--single)
 {
-    border-left: 4px solid #dd7f4e;
+    /*border-left: 4px solid #dd7f4e;*/
     border-top: none;
     margin-left: -4px;
     background: #f8f8f8;
@@ -44,6 +44,7 @@
     border-bottom: 1px dashed #e0e0e0;
     text-align: right;
     cursor: pointer;
+    background-color: white;
 }
 
 .nested-content__heading
