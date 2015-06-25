@@ -1,17 +1,16 @@
-# Nested Content
-## Developers Guide
+# Nested Content - Developers Guide
 
 ### Contents
 
-1. Introduction
-2. Getting Set Up
-  * System Requirements
-3. Configuring Nested Content
-4. Editing Nested Content
-  * Single Item Mode
-5. Rendering Nested Content
-  * Single Item Mode 
-6. Useful Links
+1. [Introduction](#introduction]
+2. [Getting Set Up](#getting-set-up)
+  * [System Requirements](#system-requirements)
+3. [Configuring Nested Content](#configuring-nested-content)
+4. [Editing Nested Content](#editing-nested-content)
+  * [Single Item Mode](#single-item-mode)
+5. [Rendering Nested Content](#rendering-nested-content)
+  * [Single Item Mode](#single-item-mode-1)
+6. [Useful Links](#useful-links)
 
 ---
 
