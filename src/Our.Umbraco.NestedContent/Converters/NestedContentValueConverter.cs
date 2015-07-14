@@ -33,39 +33,40 @@ namespace Our.Umbraco.NestedContent.Converters
         public override object ConvertDataToSource(PublishedPropertyType propertyType, object source, bool preview)
         {
             try
-			{
-                using (var timer = DisposableTimer.DebugDuration<NestedContentValueConverter>(string.Format("ConvertDataToSource ({0})", propertyType.DataTypeId)))
+            {
+                using (DisposableTimer.DebugDuration<NestedContentValueConverter>(string.Format("ConvertDataToSource ({0})", propertyType.DataTypeId)))
                 {
                     if (source != null && !source.ToString().IsNullOrWhiteSpace())
                     {
                         var rawValue = JsonConvert.DeserializeObject<List<object>>(source.ToString());
                         var processedValue = new List<IPublishedContent>();
 
-	                    var preValueCollection = NestedContentHelper.GetPreValuesCollectionByDataTypeId(propertyType.DataTypeId);
-						var preValueDictionary = preValueCollection.AsPreValueDictionary();
+                        var preValueCollection = NestedContentHelper.GetPreValuesCollectionByDataTypeId(propertyType.DataTypeId);
+                        var preValueDictionary = preValueCollection.AsPreValueDictionary();
 
                         for (var i = 0; i < rawValue.Count; i++)
                         {
-                            var o = (JObject)rawValue[i];
+                            var item = (JObject)rawValue[i];
 
-                            // convert from old style (v.0.1.1) data format if necessary
-                            // - please note: This call has virtually no impact on rendering performance for new style (>v0.1.1).
+                            // Convert from old style (v.0.1.1) data format if necessary
+                            // - Please note: This call has virtually no impact on rendering performance for new style (>v0.1.1).
                             //                Even so, this should be removed eventually, when it's safe to assume that there is
                             //                no longer any need for conversion.
-                            NestedContentHelper.ConvertItemValueFromV011(o, propertyType.DataTypeId, ref preValueCollection);
+                            NestedContentHelper.ConvertItemValueFromV011(item, propertyType.DataTypeId, ref preValueCollection);
 
-                            var contentTypeAlias = NestedContentHelper.GetContentTypeAliasFromItem(o);
-                            if(string.IsNullOrEmpty(contentTypeAlias))
+                            var contentTypeAlias = NestedContentHelper.GetContentTypeAliasFromItem(item);
+                            if (string.IsNullOrEmpty(contentTypeAlias))
                             {
                                 continue;
                             }
+
                             var publishedContentType = PublishedContentType.Get(PublishedItemType.Content, contentTypeAlias);
-                            if(publishedContentType == null)
+                            if (publishedContentType == null)
                             {
                                 continue;
                             }
 
-                            var propValues = o.ToObject<Dictionary<string, object>>();
+                            var propValues = item.ToObject<Dictionary<string, object>>();
                             var properties = new List<IPublishedProperty>();
 
                             foreach (var jProp in propValues)
@@ -85,8 +86,8 @@ namespace Our.Umbraco.NestedContent.Converters
                             }
 
                             processedValue.Add(new DetachedPublishedContent(
-                                nameObj == null ? null : nameObj.ToString(), 
-                                publishedContentType, 
+                                nameObj == null ? null : nameObj.ToString(),
+                                publishedContentType,
                                 properties.ToArray(),
                                 i));
                         }
@@ -102,7 +103,7 @@ namespace Our.Umbraco.NestedContent.Converters
                         return processedValue;
                     }
                 }
-			}
+            }
             catch (Exception e)
             {
                 LogHelper.Error<NestedContentValueConverter>("Error converting value", e);

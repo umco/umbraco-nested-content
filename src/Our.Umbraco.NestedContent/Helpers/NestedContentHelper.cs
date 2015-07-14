@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using Our.Umbraco.NestedContent.Extensions;
 using Our.Umbraco.NestedContent.PropertyEditors;
 using Umbraco.Core;
 using Umbraco.Core.Models;
-using System.Collections.Generic;
 
 namespace Our.Umbraco.NestedContent.Helpers
 {
@@ -24,20 +22,22 @@ namespace Our.Umbraco.NestedContent.Helpers
         public static string GetContentTypeAliasFromItem(JObject item)
         {
             var contentTypeAliasProperty = item[NestedContentPropertyEditor.ContentTypeAliasPropertyKey];
-            if(contentTypeAliasProperty == null)
+            if (contentTypeAliasProperty == null)
             {
                 return null;
             }
+
             return contentTypeAliasProperty.ToObject<string>();
         }
 
         public static IContentType GetContentTypeFromItem(JObject item)
         {
             var contentTypeAlias = GetContentTypeAliasFromItem(item);
-            if(string.IsNullOrEmpty(contentTypeAlias))
+            if (string.IsNullOrEmpty(contentTypeAlias))
             {
                 return null;
             }
+
             return ApplicationContext.Current.Services.ContentTypeService.GetContentType(contentTypeAlias);
         }
 
@@ -46,24 +46,28 @@ namespace Our.Umbraco.NestedContent.Helpers
         public static void ConvertItemValueFromV011(JObject item, int dtdId, ref PreValueCollection preValues)
         {
             var contentTypeAlias = GetContentTypeAliasFromItem(item);
-            if(contentTypeAlias != null)
+            if (contentTypeAlias != null)
             {
                 // the item is already in >v0.1.1 format
                 return;
             }
+
             // old style (v0.1.1) data, let's attempt a conversion
             // - get the prevalues (if they're not loaded already)
             preValues = preValues ?? GetPreValuesCollectionByDataTypeId(dtdId);
+
             // - convert the prevalues (if necessary)
             ConvertPreValueCollectionFromV011(preValues);
+
             // - get the content types prevalue as JArray
             var preValuesAsDictionary = preValues.AsPreValueDictionary();
-            if(!preValuesAsDictionary.ContainsKey(ContentTypesPreValueKey) || string.IsNullOrEmpty(preValuesAsDictionary[ContentTypesPreValueKey]) != false)
+            if (!preValuesAsDictionary.ContainsKey(ContentTypesPreValueKey) || string.IsNullOrEmpty(preValuesAsDictionary[ContentTypesPreValueKey]) != false)
             {
                 return;
             }
+
             var preValueContentTypes = JArray.Parse(preValuesAsDictionary[ContentTypesPreValueKey]);
-            if(preValueContentTypes.Any())
+            if (preValueContentTypes.Any())
             {
                 // the only thing we can really do is assume that the item is the first available content type 
                 item[NestedContentPropertyEditor.ContentTypeAliasPropertyKey] = preValueContentTypes.First().Value<string>("ncAlias");
@@ -72,27 +76,31 @@ namespace Our.Umbraco.NestedContent.Helpers
 
         public static void ConvertPreValueCollectionFromV011(PreValueCollection preValueCollection)
         {
-            if(preValueCollection == null)
+            if (preValueCollection == null)
             {
                 return;
             }
+
             var persistedPreValuesAsDictionary = preValueCollection.AsPreValueDictionary();
+
             // do we have a "docTypeGuid" prevalue and no "contentTypes" prevalue?
-            if(persistedPreValuesAsDictionary.ContainsKey("docTypeGuid") == false || persistedPreValuesAsDictionary.ContainsKey(ContentTypesPreValueKey))
+            if (persistedPreValuesAsDictionary.ContainsKey("docTypeGuid") == false || persistedPreValuesAsDictionary.ContainsKey(ContentTypesPreValueKey))
             {
                 // the prevalues are already in >v0.1.1 format
                 return;
             }
+
             // attempt to parse the doc type guid
             Guid guid;
-            if(Guid.TryParse(persistedPreValuesAsDictionary["docTypeGuid"], out guid) == false)
+            if (Guid.TryParse(persistedPreValuesAsDictionary["docTypeGuid"], out guid) == false)
             {
                 // this shouldn't happen... but just in case.
                 return;
             }
+
             // find the content type
             var contentType = ApplicationContext.Current.Services.ContentTypeService.GetAllContentTypes().FirstOrDefault(c => c.Key == guid);
-            if(contentType == null)
+            if (contentType == null)
             {
                 return;
             }
@@ -113,5 +121,5 @@ namespace Our.Umbraco.NestedContent.Helpers
         }
 
         #endregion
-	}
+    }
 }

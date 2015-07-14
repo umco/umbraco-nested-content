@@ -15,7 +15,8 @@ namespace Our.Umbraco.NestedContent.Models
 
         public DetachedPublishedProperty(PublishedPropertyType propertyType, object value)
             : this(propertyType, value, false)
-        { }
+        {
+        }
 
         public DetachedPublishedProperty(PublishedPropertyType propertyType, object value, bool isPreview)
         {
@@ -43,7 +44,9 @@ namespace Our.Umbraco.NestedContent.Models
         }
 
         public object DataValue { get { return _rawValue; } }
+
         public object Value { get { return _objectValue.Value; } }
+
         public object XPathValue { get { return _xpathValue.Value; } }
     }
 }

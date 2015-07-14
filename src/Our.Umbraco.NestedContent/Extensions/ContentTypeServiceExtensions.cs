@@ -1,8 +1,4 @@
-﻿using System;
-using Umbraco.Core;
-using Umbraco.Core.Services;
-
-namespace Our.Umbraco.NestedContent.Extensions
+﻿namespace Our.Umbraco.NestedContent.Extensions
 {
     internal static class ContentTypeServiceExtensions
     {
