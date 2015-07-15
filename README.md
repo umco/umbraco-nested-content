@@ -53,6 +53,15 @@ A PDF download is also available: [Nested Content - Developers Guide v1.0.pdf](d
 
 ---
 
+## Known Issues
+
+Please be aware that not all property-editors will work within Nested Content. The following property-editors are known to have compatibility issues:
+
+* Upload (default Umbraco core)
+* Macro Container (default Umbraco core)
+
+---
+
 ## Contributing to this project
 
 Anyone and everyone is welcome to contribute. Please take a moment to review the [guidelines for contributing](CONTRIBUTING.md).
