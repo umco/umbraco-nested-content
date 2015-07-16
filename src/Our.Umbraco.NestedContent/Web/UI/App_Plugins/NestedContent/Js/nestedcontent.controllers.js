@@ -176,6 +176,11 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             return name;
         };
 
+        $scope.getIcon = function (idx) {
+            var scaffold = $scope.getScaffold($scope.model.value[idx].ncContentTypeAlias);
+            return scaffold && scaffold.icon && scaffold.icon !== ".sprTreeFolder" ? scaffold.icon : "icon-folder";
+        }
+
         $scope.sortableOptions = {
             axis: 'y',
             cursor: "move",
