@@ -340,8 +340,8 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
         // submit watcher handling:  
         // because some property editors use the "formSubmitting" event to set/clean up their model.value,  
-        // we need to monitor the "formSubmitting" event from a custom property and broadcast our own event  
-        // to forcefully update the appropriate model.value's
+        // we need to monitor the "formSubmitting" event from a custom property so we can update our model
+        // after all the children are done updating theirs.
 
         // A directive is added right after each node is rendered, and hooks into these callback methods.
         // We have a counter so that the directive calling these methods can determine whether it's the one
