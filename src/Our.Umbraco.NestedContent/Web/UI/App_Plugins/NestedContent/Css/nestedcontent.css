@@ -57,6 +57,7 @@
 {
     vertical-align: text-top;
     color: #999; /* same icon color as the icons in the item type picker */
+    margin-right: 6px;
 }
 
 .nested-content__icons 
