@@ -7,7 +7,7 @@
 
                 <div class="nested-content__header-bar" ng-click="$parent.editNode($index)" ng-hide="$parent.singleMode">
                 
-                    <div class="nested-content__heading"><i ng-if="!hideIcons" class="icon" ng-class="$parent.getIcon($index)"></i><span ng-bind="$parent.getName($index)"></span></div>
+                    <div class="nested-content__heading"><i ng-if="showIcons" class="icon" ng-class="$parent.getIcon($index)"></i><span ng-bind="$parent.getName($index)"></span></div>
                 
                     <div class="nested-content__icons">
                         <a class="nested-content__icon nested-content__icon--edit"  ng-class="{ 'nested-content__icon--active' : $parent.currentNode.id == node.id }" ng-click="$parent.editNode($index); $event.stopPropagation();" prevent-default>

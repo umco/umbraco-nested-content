@@ -73,7 +73,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
         $scope.singleMode = $scope.minItems == 1 && $scope.maxItems == 1;
 
-        $scope.hideIcons = $scope.model.config.hideIcons == true;
+        $scope.showIcons = $scope.model.config.showIcons || true;
 
         $scope.overlayMenu = {
             show: false,
