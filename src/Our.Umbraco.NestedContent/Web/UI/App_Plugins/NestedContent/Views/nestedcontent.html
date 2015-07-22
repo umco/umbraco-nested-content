@@ -27,6 +27,7 @@
                     <nested-content-editor ng-model="node" tab-alias="ncTabAlias" />
                 </div>
         
+                <nested-content-submit-watcher active-submit-watcher="$parent.activeSubmitWatcher" load-callback="$parent.submitWatcherOnLoad" submit-callback="$parent.submitWatcherOnSubmit"></nested-content-submit-watcher>
             </div>
         
         </div>
