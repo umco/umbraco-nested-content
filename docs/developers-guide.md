@@ -46,12 +46,11 @@ The prevalue editor allows you to configure the following properties.
 
 | Member          | Type    | Description |
 |-----------------|---------|-------------|
-| Doc Type        | List    | Selects the doc type you want to use as the blue print for your list items. |
-| Tab             | String  | The alias of the tab you wish to use as your list item editor. If not set, the first non "Properties" tab will be used. |
-| Label Template  | String  | An template to use for generating list item labels. Use the syntax `{{propertyAlias}}` to use the values of your doc type properties. If not set, defaults to a standard "Item 1", "Item 2", "Item 3" template. |
+| Doc Types       | List    | Defines a list of doc types to use as data blue prints for this **Nested Content** instance. For each doc type you can provide the alias of the tab you wish to render (first tab is used by default if not set) as well as a template for generating list item labels using the syntax `{{propertyAlias}}`. |
 | Min Items       | Int     | Sets the minimum number of items that should be allowed in the list. If greater than 0, **Nested Content** will pre-populate your list with the minimum amount of allowed items and prevent deleting items below this level. Defaults to 0.
 | Max Itemd       | Int     | Sets the maximum number of items that should be allowed in the list. If greater than 0, **Nested Content** will prevent new items being added to the list above this threshold. Defaults to 0. |
 | Confirm Deletes | Boolean | Enabling this will require item deletions to require a confirmation before being deleted. Defaults to TRUE |
+| Show Icons      | Boolean | Enabling this will display the items doc type icon next to the name in the **Nested Content** list. |
 | Hide Label      | Boolean | Enabling this will hide the property editors label and expand the **Nested Content** property editor to the full with of the editor window. |
 
 Once your data type has been configured, simply set-up a property on your page doc type using your new data type and you are set to start editing.
@@ -66,7 +65,15 @@ When viewing a **Nested Content** editor for the first time, you’ll be present
 
 ![Nested Content - Add Item](assets/img/screenshot-02.png)
 
-Simply click the ![Nested Content - Plus Icon](assets/img/icon-plus.png) icon and a new item will be added to the list with the editor form displayed.
+Simply click the ![Nested Content - Plus Icon](assets/img/icon-plus.png) icon to start creating a new item in the list. 
+
+If your **Nested Content** editor is configured with multiple doc types you will be presented with a dialog window to select which doc type you would like to use.
+
+![Nested Content - Plus Icon](assets/img/screenshot-02.5.png) 
+
+Simply click the icon of the doc type you wish to use and a new items will be created in the list using that doc type.
+
+If you only have one doc type configured for your **Nested Content** editor, then clicking the ![Nested Content - Plus Icon](assets/img/icon-plus.png) will not display the dialog and instead will jump straight to inserting an entry in the editor for you ready to edit.
 
 ![Nested Content - New Item](assets/img/screenshot-03.png)
 
