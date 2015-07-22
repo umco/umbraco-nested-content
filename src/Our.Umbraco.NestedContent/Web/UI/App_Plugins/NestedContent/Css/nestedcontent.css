@@ -9,13 +9,12 @@
     text-align: left;
     border-top: solid 1px transparent;
     background: white;
+
+
 }
 
 .nested-content__item--active:not(.nested-content__item--single)
 {
-    /*border-left: 4px solid #dd7f4e;*/
-    border-top: none;
-    margin-left: -4px;
     background: #f8f8f8;
 }
 
@@ -45,6 +44,11 @@
     text-align: right;
     cursor: pointer;
     background-color: white;
+
+    -moz-user-select: none; 
+    -khtml-user-select: none; 
+    -webkit-user-select: none; 
+    -o-user-select: none; 
 }
 
 .nested-content__heading
