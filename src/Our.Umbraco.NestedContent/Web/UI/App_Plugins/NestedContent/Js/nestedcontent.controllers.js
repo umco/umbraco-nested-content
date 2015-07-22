@@ -73,6 +73,8 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
         $scope.singleMode = $scope.minItems == 1 && $scope.maxItems == 1;
 
+        $scope.showIcons = $scope.model.config.showIcons || true;
+
         $scope.overlayMenu = {
             show: false,
             style: {}
@@ -175,6 +177,11 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
             return name;
         };
+
+        $scope.getIcon = function (idx) {
+            var scaffold = $scope.getScaffold($scope.model.value[idx].ncContentTypeAlias);
+            return scaffold && scaffold.icon && scaffold.icon !== ".sprTreeFolder" ? scaffold.icon : "icon-folder";
+        }
 
         $scope.sortableOptions = {
             axis: 'y',

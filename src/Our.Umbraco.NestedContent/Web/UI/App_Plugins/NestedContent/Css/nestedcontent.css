@@ -53,6 +53,13 @@
     line-height: 20px;
 }
 
+.nested-content__heading i 
+{
+    vertical-align: text-top;
+    color: #999; /* same icon color as the icons in the item type picker */
+    margin-right: 10px;
+}
+
 .nested-content__icons 
 {
     margin: -6px 0;
