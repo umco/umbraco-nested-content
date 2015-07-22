@@ -67,7 +67,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
             [PreValueField("confirmDeletes", "Confirm Deletes", "boolean", Description = "Set whether item deletions should require confirming.")]
             public string ConfirmDeletes { get; set; }
 
-            [PreValueField("showIcons", "Show Icons", "boolean", Description = "Set whether to show the item icons in the list.")]
+            [PreValueField("showIcons", "Show Icons", "boolean", Description = "Set whether to show the items doc type icon in the list.")]
             public string ShowIcons { get; set; }
 
             [PreValueField("hideLabel", "Hide Label", "boolean", Description = "Set whether to hide the editor label and have the list take up the full width of the editor window.")]
