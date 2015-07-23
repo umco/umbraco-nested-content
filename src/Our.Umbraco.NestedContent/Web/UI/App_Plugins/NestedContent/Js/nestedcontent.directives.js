@@ -9,7 +9,7 @@
 
             if ($scope.tabAlias) {
                 angular.forEach($scope.ngModel.tabs, function (value, key) {
-                    if (value.alias == $scope.tabAlias) {
+                    if (value.alias.toLowerCase() == $scope.tabAlias.toLowerCase()) {
                         tab = value;
                         return;
                     }

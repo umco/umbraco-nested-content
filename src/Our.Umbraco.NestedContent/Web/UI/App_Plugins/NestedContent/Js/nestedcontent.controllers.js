@@ -16,6 +16,17 @@
             );
         }
 
+        $scope.selectedDocTypeTabs = function(cfg) {
+            var dt = _.find($scope.model.docTypes, function(itm) {
+                return itm.alias.toLowerCase() == cfg.ncAlias.toLowerCase();
+            });
+            var tabs = dt ? dt.tabs : [];
+            if (!_.contains(tabs, cfg.ncTabAlias)) {
+                cfg.ncTabAlias = tabs[0];
+            }
+            return tabs;
+        }
+
         $scope.remove = function (index) {
             $scope.model.value.splice(index, 1);
         }
@@ -227,8 +238,8 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             contentResource.getScaffold(-20, contentType.ncAlias).then(function(scaffold) {
                 // remove all tabs except the specified tab
                 var tab = _.find(scaffold.tabs, function(tab) {
-                    return tab.id != 0 && (tab.alias == contentType.ncTabAlias || contentType.ncTabAlias == "");
-                })
+                    return tab.id != 0 && (tab.alias.toLowerCase() == contentType.ncTabAlias.toLowerCase() || contentType.ncTabAlias == "");
+                });
                 scaffold.tabs = [];
                 if (tab) {
                     scaffold.tabs.push(tab);
