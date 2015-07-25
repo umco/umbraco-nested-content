@@ -167,18 +167,18 @@
     margin-left: 10px;
 }
 
-.form-horizontal .nested-content .control-label 
+.form-horizontal .nested-content--narrow .control-label 
 {
     width: 30%;
 }
 
-.form-horizontal .nested-content .controls-row 
+.form-horizontal .nested-content--narrow .controls-row 
 {
     margin-left: 40% !important;
 }
 
-.form-horizontal .nested-content .controls-row .umb-textstring,
-.form-horizontal .nested-content .controls-row .umb-textarea
+.form-horizontal .nested-content--narrow .controls-row .umb-textstring,
+.form-horizontal .nested-content--narrow .controls-row .umb-textarea
 {
     width: 95%;
 }
