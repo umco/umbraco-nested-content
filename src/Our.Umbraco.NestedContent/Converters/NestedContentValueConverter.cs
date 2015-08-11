@@ -85,10 +85,15 @@ namespace Our.Umbraco.NestedContent.Converters
                                 // Do nothing, we just want to parse out the name if we can
                             }
 
+                            // Get the current request node we are embedded in
+                            var pcr = UmbracoContext.Current.PublishedContentRequest;
+                            var containerNode = pcr != null && pcr.HasPublishedContent ? pcr.PublishedContent : null;
+
                             processedValue.Add(new DetachedPublishedContent(
                                 nameObj == null ? null : nameObj.ToString(),
                                 publishedContentType,
                                 properties.ToArray(),
+                                containerNode,
                                 i));
                         }
 
