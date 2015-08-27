@@ -55,13 +55,33 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
     "$filter",
     "contentResource",
     "Our.Umbraco.NestedContent.Resources.NestedContentResources",
+    "localizationService",
 
-    function ($scope, $interpolate, $filter, contentResource, ncResources) {
+    function ($scope, $interpolate, $filter, contentResource, ncResources, localizationService) {
 
         //$scope.model.config.contentTypes;
         //$scope.model.config.minItems;
         //$scope.model.config.maxItems;
         //console.log($scope);
+
+        $scope.editIconTitle = '';
+        $scope.moveIconTitle = '';
+        $scope.deleteIconTitle = '';
+
+        // localize the edit icon title
+        localizationService.localize('general_edit').then(function (value) {
+            $scope.editIconTitle = value;
+        });
+
+        // localize the delete icon title
+        localizationService.localize('general_delete').then(function (value) {
+            $scope.deleteIconTitle = value;
+        });
+
+        // localize the move icon title
+        localizationService.localize('actions_move').then(function (value) {
+            $scope.moveIconTitle = value;
+        });
 
         var inited = false;
 
