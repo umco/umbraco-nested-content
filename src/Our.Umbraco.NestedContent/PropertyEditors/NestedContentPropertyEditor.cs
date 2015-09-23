@@ -327,6 +327,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                 if (value == null)
                     yield break;
 
+                IDataTypeService dataTypeService = ApplicationContext.Current.Services.DataTypeService;
                 for (var i = 0; i < value.Count; i++)
                 {
                     var o = value[i];
@@ -345,15 +346,16 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                         var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType != null)
                         {
-                            // It would be better to pass this off to the individual property editors
-                            // to validate themselves and pass the result down, however a lot of the
-                            // validation checking code in core seems to be internal so for now we'll
-                            // just replicate the mandatory / regex validation checks ourselves.
-                            // This does of course mean we will miss any custom validators a property
-                            // editor may have registered by itself, and it also means we can only
-                            // validate to a single depth so having a complex property editor in a 
-                            // doc type could get passed validation if it can't be validated from it's
-                            // stored value alone.
+                            PreValueCollection propPrevalues = dataTypeService.GetPreValuesCollectionByDataTypeId(propType.DataTypeDefinitionId);
+                            PropertyEditor propertyEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
+
+                            foreach (IPropertyValidator validator in propertyEditor.ValueEditor.Validators)
+                            {
+                                foreach (ValidationResult result in validator.Validate(propValues[propKey], propPrevalues, propertyEditor))
+                                {
+                                    yield return result;
+                                }
+                            }
 
                             // Check mandatory
                             if (propType.Mandatory)
