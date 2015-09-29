@@ -353,6 +353,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                             {
                                 foreach (ValidationResult result in validator.Validate(propValues[propKey], propPrevalues, propertyEditor))
                                 {
+                                    result.ErrorMessage = "Item " + (i + 1) + " '" + propType.Name + "' " + result.ErrorMessage;
                                     yield return result;
                                 }
                             }
