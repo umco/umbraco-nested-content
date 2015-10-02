@@ -151,7 +151,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
                     foreach (var propKey in propValueKeys)
                     {
-                        var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
+                        var propType = contentType.CompositionPropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType == null)
                         {
                             if (IsSystemPropertyKey(propKey) == false)
@@ -216,7 +216,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
                     foreach (var propKey in propValueKeys)
                     {
-                        var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
+                        var propType = contentType.CompositionPropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType == null)
                         {
                             if (IsSystemPropertyKey(propKey) == false)
@@ -280,7 +280,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
                     foreach (var propKey in propValueKeys)
                     {
-                        var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
+                        var propType = contentType.CompositionPropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType == null)
                         {
                             if (IsSystemPropertyKey(propKey) == false)
@@ -342,7 +342,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
                     foreach (var propKey in propValueKeys)
                     {
-                        var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
+                        var propType = contentType.CompositionPropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType != null)
                         {
                             // It would be better to pass this off to the individual property editors
