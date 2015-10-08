@@ -58,6 +58,7 @@ A PDF download is also available: [Nested Content - Developers Guide v1.0.pdf](d
 Please be aware that not all property-editors will work within Nested Content. The following property-editors are known to have compatibility issues:
 
 * Upload (default Umbraco core)
+* Image Cropper (default Umbraco core)
 * Macro Container (default Umbraco core)
 
 ---
