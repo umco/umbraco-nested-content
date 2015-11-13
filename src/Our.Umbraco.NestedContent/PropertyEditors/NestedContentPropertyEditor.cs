@@ -262,7 +262,11 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
                 var value = JsonConvert.DeserializeObject<List<object>>(editorValue.Value.ToString());
                 if (value == null)
-                    return string.Empty;
+                    return null;
+
+                // Issue #38 - Keep recursive property lookups working
+                if (!value.Any()) 
+                    return null;
 
                 // Process value
                 for (var i = 0; i < value.Count; i++)
