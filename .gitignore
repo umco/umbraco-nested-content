@@ -15,3 +15,4 @@ src/packages/*/**
 build/App_plugins/
 build/bin/
 assets/
+src/Our.Umbraco.NestedContent/Settings.StyleCop
