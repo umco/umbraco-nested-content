@@ -149,6 +149,9 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
         };
 
         $scope.editNode = function (idx) {
+
+            $scope.$broadcast("formSubmitting", { scope: $scope });
+
             if ($scope.currentNode && $scope.currentNode.id == $scope.nodes[idx].id) {
                 $scope.currentNode = undefined;
             } else {
@@ -328,7 +331,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             return node;
         }
 
-        $scope.$watch("nodes", function () {
+        var updateModel = function () {
             if (inited) {
                 var newValues = [];
                 for (var i = 0; i < $scope.nodes.length; i++) {
@@ -350,7 +353,32 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 }
                 $scope.model.value = newValues;
             }
-        }, true);
+        }
+
+        var unsubscribe = $scope.$on("formSubmitting", function (ev, args) {
+            updateModel();
+        });
+
+        $scope.$on('$destroy', function () {
+            unsubscribe();
+        });
+
+        // submit watcher handling:  
+        // because some property editors use the "formSubmitting" event to set/clean up their model.value,  
+        // we need to monitor the "formSubmitting" event from a custom property so we can update our model
+        // after all the children are done updating theirs.
+
+        // A directive is added right after each node is rendered, and hooks into these callback methods.
+        // We have a counter so that the directive calling these methods can determine whether it's the one
+        // to trigger the onSubmit callback method or not, thereby making sure only the latest one triggers 
+        // the update as all previous ones are going to be invalid.
+        $scope.activeSubmitWatcher = 0;  
+        $scope.submitWatcherOnLoad = function () {
+            return ++$scope.activeSubmitWatcher; 
+        }  
+        $scope.submitWatcherOnSubmit = function () {  
+            updateModel();
+        }
 
         var guid = function () {
             function _p8(s) {

@@ -26,8 +26,10 @@
                 </div>
 
                 <div class="nested-content__content" ng-if="$parent.currentNode.id == node.id && !$parent.sorting">
-                    <nested-content-editor ng-model="node" tab-alias="ncTabAlias" />
+                    <nested-content-editor ng-model="node" tab-alias="ncTabAlias"/>
                 </div>
+
+                <nested-content-submit-watcher active-submit-watcher="$parent.activeSubmitWatcher" load-callback="$parent.submitWatcherOnLoad" submit-callback="$parent.submitWatcherOnSubmit"></nested-content-submit-watcher>
 
             </div>
 

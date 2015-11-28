@@ -32,3 +32,28 @@
 
     }
 ]);
+
+angular.module("umbraco.directives").directive('nestedContentSubmitWatcher', function () {
+    var link = function (scope) {
+        // call the load callback on scope to obtain the ID of this submit watcher
+        var id = scope.loadCallback();
+        scope.$on("formSubmitting", function (ev, args) {
+            // on the "formSubmitting" event, call the submit callback on scope to notify the nestedContent controller to do it's magic
+            if (id === scope.activeSubmitWatcher) {
+                scope.submitCallback();
+            }
+        });
+    }
+    
+    return {
+        restrict: "E",
+        replace: true,
+        template: "",
+        scope: {
+            loadCallback: '=',
+            submitCallback: '=',
+            activeSubmitWatcher: '='
+        },
+        link: link
+    }
+});
