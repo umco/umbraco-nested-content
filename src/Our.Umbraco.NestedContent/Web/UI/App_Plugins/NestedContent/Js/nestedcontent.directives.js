@@ -1,6 +1,6 @@
 ﻿angular.module("umbraco.directives").directive('nestedContentEditor', [
-    "editorState",
-    function (editorState) {
+
+    function () {
 
         var link = function ($scope, element, attrs, ctrl) {
             $scope.nodeContext = $scope.model = $scope.ngModel;
