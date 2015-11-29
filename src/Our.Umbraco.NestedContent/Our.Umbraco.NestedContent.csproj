@@ -243,7 +243,6 @@
   <ItemGroup>
     <Content Include="Web\UI\App_Plugins\NestedContent\Js\nestedcontent.controllers.js" />
     <Content Include="Web\UI\App_Plugins\NestedContent\Js\nestedcontent.directives.js" />
-    <Content Include="Web\UI\App_Plugins\NestedContent\Js\nestedcontent.services.js" />
     <Content Include="Web\UI\App_Plugins\NestedContent\Js\nestedcontent.resources.js" />
     <Content Include="Web\UI\App_Plugins\NestedContent\Views\nestedcontent.editor.html" />
     <Content Include="Web\UI\App_Plugins\NestedContent\Views\nestedcontent.doctypepicker.html" />
