@@ -133,6 +133,10 @@
     border-bottom: 1px dashed #e0e0e0;
 }
 
+.nested-content__content .umb-control-group {
+    padding-bottom: 0;
+}
+
 .nested-content__item.ui-sortable-helper .nested-content__content
 {
     display: none !important;
@@ -181,4 +185,8 @@
 .form-horizontal .nested-content--narrow .controls-row .umb-textarea
 {
     width: 95%;
+}
+
+.form-horizontal .nested-content--narrow .controls-row .umb-dropdown {
+    width: 99%;
 }
