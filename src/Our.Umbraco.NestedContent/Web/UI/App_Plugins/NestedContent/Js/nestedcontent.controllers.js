@@ -93,6 +93,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
         $scope.nodes = [];
         $scope.currentNode = undefined;
+        $scope.realCurrentNode = undefined;
         $scope.scaffolds = undefined;
         $scope.sorting = false;
 
@@ -169,9 +170,6 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
         };
 
         $scope.editNode = function (idx) {
-
-            $scope.$broadcast("formSubmitting", { scope: $scope });
-
             if ($scope.currentNode && $scope.currentNode.id == $scope.nodes[idx].id) {
                 $scope.currentNode = undefined;
             } else {
@@ -195,19 +193,24 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
             var name = "Item " + (idx + 1);
 
-            var contentType = $scope.getContentTypeConfig($scope.model.value[idx].ncContentTypeAlias);
+            if ($scope.model.value[idx]) {
 
-            if (contentType != null && contentType.nameExp) {
-                var newName = contentType.nameExp($scope.model.value[idx]); // Run it against the stored dictionary value, NOT the node object
-                if (newName && (newName = $.trim(newName))) {
-                    name = newName;
+                var contentType = $scope.getContentTypeConfig($scope.model.value[idx].ncContentTypeAlias);
+
+                if (contentType != null && contentType.nameExp) {
+                    var newName = contentType.nameExp($scope.model.value[idx]); // Run it against the stored dictionary value, NOT the node object
+                    if (newName && (newName = $.trim(newName))) {
+                        name = newName;
+                    }
                 }
+
             }
 
             // Update the nodes actual name value
-            if ($scope.nodes[idx].name != newName) {
+            if ($scope.nodes[idx].name !== name) {
                 $scope.nodes[idx].name = name;
             }
+
 
             return name;
         };
@@ -352,6 +355,9 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
         }
 
         var updateModel = function () {
+            if ($scope.realCurrentNode) {
+                $scope.$broadcast("ncSyncVal", { id: $scope.realCurrentNode.id });
+            }
             if (inited) {
                 var newValues = [];
                 for (var i = 0; i < $scope.nodes.length; i++) {
@@ -375,6 +381,11 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             }
         }
 
+        $scope.$watch("currentNode", function (newVal) {
+            updateModel();
+            $scope.realCurrentNode = newVal;
+        });
+
         var unsubscribe = $scope.$on("formSubmitting", function (ev, args) {
             updateModel();
         });
@@ -382,23 +393,6 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
         $scope.$on('$destroy', function () {
             unsubscribe();
         });
-
-        // submit watcher handling:  
-        // because some property editors use the "formSubmitting" event to set/clean up their model.value,  
-        // we need to monitor the "formSubmitting" event from a custom property so we can update our model
-        // after all the children are done updating theirs.
-
-        // A directive is added right after each node is rendered, and hooks into these callback methods.
-        // We have a counter so that the directive calling these methods can determine whether it's the one
-        // to trigger the onSubmit callback method or not, thereby making sure only the latest one triggers 
-        // the update as all previous ones are going to be invalid.
-        $scope.activeSubmitWatcher = 0;  
-        $scope.submitWatcherOnLoad = function () {
-            return ++$scope.activeSubmitWatcher; 
-        }  
-        $scope.submitWatcherOnSubmit = function () {  
-            updateModel();
-        }
 
         var guid = function () {
             function _p8(s) {
