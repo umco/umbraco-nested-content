@@ -241,6 +241,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 });
                 $scope.$apply(function () {
                     $scope.sorting = false;
+                    updateModel();
                 });
             }
         };
