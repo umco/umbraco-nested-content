@@ -17,7 +17,3 @@ if (!$nestedContentFolder)
 		Copy-Item $newPackageFiles $projectPath -Recurse -Force
 	}
 }
-
-
-
-
