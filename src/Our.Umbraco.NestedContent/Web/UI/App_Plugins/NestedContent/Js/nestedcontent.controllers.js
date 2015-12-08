@@ -182,9 +182,11 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 if ($scope.model.config.confirmDeletes && $scope.model.config.confirmDeletes == 1) {
                     if (confirm("Are you sure you want to delete this item?")) {
                         $scope.nodes.splice(idx, 1);
+                        updateModel();
                     }
                 } else {
                     $scope.nodes.splice(idx, 1);
+                    updateModel();
                 }
             }
         };
@@ -335,6 +337,8 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 var tab = node.tabs[t];
                 for (var p = 0; p < tab.properties.length; p++) {
                     var prop = tab.properties[p];
+                    prop.propertyAlias = prop.alias;
+                    prop.alias = $scope.model.alias + "___" + prop.alias;
                     // Force validation to occur server side as this is the 
                     // only way we can have consistancy between mandatory and
                     // regex validation messages. Not ideal, but it works.
@@ -343,8 +347,8 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                         pattern: ""
                     };
                     if (item) {
-                        if (item[prop.alias]) {
-                            prop.value = item[prop.alias];
+                        if (item[prop.propertyAlias]) {
+                            prop.value = item[prop.propertyAlias];
                         }
                     }
                 }
@@ -372,7 +376,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                         for (var p = 0; p < tab.properties.length; p++) {
                             var prop = tab.properties[p];
                             if (typeof prop.value !== "function") {
-                                newValue[prop.alias] = prop.value;
+                                newValue[prop.propertyAlias] = prop.value;
                             }
                         }
                     }

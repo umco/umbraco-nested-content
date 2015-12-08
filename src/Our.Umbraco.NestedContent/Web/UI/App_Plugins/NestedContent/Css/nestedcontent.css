@@ -75,7 +75,7 @@
 }
 
 .nested-content__header-bar:hover .nested-content__icons,
-.nested-content__item--active .nested-content__icons
+.nested-content__item--active > .nested-content__header-bar .nested-content__icons
 {
     opacity: 1;
 }
