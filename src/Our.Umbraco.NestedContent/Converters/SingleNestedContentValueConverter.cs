@@ -17,8 +17,8 @@ using Umbraco.Web;
 namespace Our.Umbraco.NestedContent.Converters
 {
     [PropertyValueCache(PropertyCacheValue.All, PropertyCacheLevel.Content)]
-    [PropertyValueType(typeof(IEnumerable<IPublishedContent>))] 
-    public class NestedContentValueConverter : PropertyValueConverterBase
+    [PropertyValueType(typeof(IPublishedContent))] 
+    public class SingleNestedContentValueConverter : PropertyValueConverterBase
     {
         private UmbracoHelper _umbraco;
         internal UmbracoHelper Umbraco
@@ -28,7 +28,7 @@ namespace Our.Umbraco.NestedContent.Converters
 
         public override bool IsConverter(PublishedPropertyType propertyType)
         {
-            return propertyType.IsNestedContentProperty() && !propertyType.IsSingleNestedContentProperty();
+            return propertyType.IsSingleNestedContentProperty();
         }
 
         public override object ConvertDataToSource(PublishedPropertyType propertyType, object source, bool preview)
@@ -39,7 +39,7 @@ namespace Our.Umbraco.NestedContent.Converters
             }
             catch (Exception e)
             {
-                LogHelper.Error<NestedContentValueConverter>("Error converting value", e);
+                LogHelper.Error<SingleNestedContentValueConverter>("Error converting value", e);
             }
 
             return null;

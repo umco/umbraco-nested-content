@@ -228,6 +228,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrap.cs" />
+    <Compile Include="Converters\NestedContentConverterHelper.cs" />
+    <Compile Include="Converters\SingleNestedContentValueConverter.cs" />
     <Compile Include="Converters\NestedContentValueConverter.cs" />
     <Compile Include="Extensions\ContentTypeServiceExtensions.cs" />
     <Compile Include="Extensions\PreValueCollectionExtensions.cs" />
