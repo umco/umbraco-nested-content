@@ -35,7 +35,7 @@ namespace Our.Umbraco.NestedContent.Converters
         {
             try
             {
-                propertyType.ConvertDataToSource(source);
+                propertyType.ConvertPropertyToNestedContent(source);
             }
             catch (Exception e)
             {

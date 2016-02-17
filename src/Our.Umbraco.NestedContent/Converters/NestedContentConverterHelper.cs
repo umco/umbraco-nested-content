@@ -41,7 +41,7 @@ namespace Our.Umbraco.NestedContent.Converters
                    int.TryParse(preValueDictionary["maxItems"], out maxItems) && maxItems == 1;
         }
 
-        public static object ConvertDataToSource(this PublishedPropertyType propertyType, object source)
+        public static object ConvertPropertyToNestedContent(this PublishedPropertyType propertyType, object source)
         {
             using (DisposableTimer.DebugDuration<NestedContentValueConverter>(string.Format("ConvertDataToSource ({0})", propertyType.DataTypeId)))
             {
