@@ -17,7 +17,7 @@ using Umbraco.Web;
 namespace Our.Umbraco.NestedContent.Converters
 {
     [PropertyValueCache(PropertyCacheValue.All, PropertyCacheLevel.Content)]
-    [PropertyValueType(typeof(IEnumerable<IPublishedContent>))]
+    [PropertyValueType(typeof(IEnumerable<IPublishedContent>))] 
     public class NestedContentValueConverter : PropertyValueConverterBase
     {
         private UmbracoHelper _umbraco;
