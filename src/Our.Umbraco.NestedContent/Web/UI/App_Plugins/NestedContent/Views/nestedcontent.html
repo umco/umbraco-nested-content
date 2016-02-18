@@ -43,7 +43,7 @@
         </div>
 
         <div class="usky-grid" ng-if="overlayMenu.show">
-            <div class="cell-tools-menu" ng-style="overlayMenu.style" delayed-mouseleave="closeNodeTypePicker()">
+            <div class="cell-tools-menu" ng-style="overlayMenu.style" delayed-mouseleave="closeNodeTypePicker()" on-delayed-mouseleave="closeNodeTypePicker()">
                 <h5>
                     <localize key="grid_insertControl" />
                 </h5>
