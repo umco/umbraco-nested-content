@@ -14,7 +14,7 @@ artifacts:
   - path: artifacts\*.zip
 
 deploy:
-    # MyGet Deployment for builds & releases
+    # MyGet (Nested Content feed) Deployment for builds & releases
   - provider: NuGet
     server: https://www.myget.org/F/umbraco-nested-content/
     symbol_server: https://nuget.symbolsource.org/MyGet/umbraco-nested-content
@@ -24,7 +24,7 @@ deploy:
     on:
       branch: develop
 
-    # MyGet Deployment for builds & releases
+    # MyGet (Umbraco Community feed) Deployment for builds & releases
   - provider: NuGet
     server: https://www.myget.org/F/umbraco-packages/
     symbol_server: https://nuget.symbolsource.org/MyGet/umbraco-packages
