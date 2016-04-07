@@ -228,7 +228,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrap.cs" />
-    <Compile Include="Converters\NestedContentConverterHelper.cs" />
+    <Compile Include="Extensions\PublishedPropertyTypeExtensions.cs" />
     <Compile Include="Converters\SingleNestedContentValueConverter.cs" />
     <Compile Include="Converters\NestedContentValueConverter.cs" />
     <Compile Include="Extensions\ContentTypeServiceExtensions.cs" />

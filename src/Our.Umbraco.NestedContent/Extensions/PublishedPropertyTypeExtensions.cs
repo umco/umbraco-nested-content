@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Our.Umbraco.NestedContent.Extensions;
 using Our.Umbraco.NestedContent.Helpers;
 using Our.Umbraco.NestedContent.Models;
 using Our.Umbraco.NestedContent.PropertyEditors;
@@ -14,11 +10,10 @@ using Umbraco.Core.Models;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Web;
 
-namespace Our.Umbraco.NestedContent.Converters
+namespace Our.Umbraco.NestedContent.Extensions
 {
-    public static class NestedContentConverterHelper
+    internal static class PublishedPropertyTypeExtensions
     {
-
         public static bool IsNestedContentProperty(this PublishedPropertyType publishedProperty)
         {
             return publishedProperty.PropertyEditorAlias.InvariantEquals(NestedContentPropertyEditor.PropertyEditorAlias);
@@ -43,7 +38,7 @@ namespace Our.Umbraco.NestedContent.Converters
 
         public static object ConvertPropertyToNestedContent(this PublishedPropertyType propertyType, object source)
         {
-            using (DisposableTimer.DebugDuration<NestedContentValueConverter>(string.Format("ConvertDataToSource ({0})", propertyType.DataTypeId)))
+            using (DisposableTimer.DebugDuration<PublishedPropertyType>(string.Format("ConvertPropertyToNestedContent ({0})", propertyType.DataTypeId)))
             {
                 if (source != null && !source.ToString().IsNullOrWhiteSpace())
                 {
@@ -114,6 +109,7 @@ namespace Our.Umbraco.NestedContent.Converters
                     return processedValue;
                 }
             }
+
             return null;
         }
     }

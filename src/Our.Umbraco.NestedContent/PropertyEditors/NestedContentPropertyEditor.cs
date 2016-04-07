@@ -1,7 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,7 +11,6 @@ using Umbraco.Core.Models;
 using Umbraco.Core.Models.Editors;
 using Umbraco.Core.PropertyEditors;
 using Umbraco.Core.Services;
-using umbraco.editorControls.SettingControls;
 using Umbraco.Web.PropertyEditors;
 
 namespace Our.Umbraco.NestedContent.PropertyEditors
