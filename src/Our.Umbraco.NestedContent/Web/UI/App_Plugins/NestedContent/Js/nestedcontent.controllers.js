@@ -8,7 +8,7 @@
         $scope.add = function() {
             $scope.model.value.push({
                     // As per PR #4, all stored content type aliases must be prefixed "nc" for easier recognition.
-                    // For good measure we'll also prefix the tab alias "nc" 
+                    // For good measure we'll also prefix the tab alias "nc"
                     ncAlias: "",
                     ncTabAlias: "",
                     nameTemplate: ""
@@ -106,6 +106,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
         $scope.singleMode = $scope.minItems == 1 && $scope.maxItems == 1;
         $scope.showIcons = $scope.model.config.showIcons || true;
         $scope.wideMode = $scope.model.config.hideLabel == "1";
+        $scope.allowDisabling = $scope.model.config.allowDisabling === "1";
 
         $scope.overlayMenu = {
             show: false,
@@ -189,6 +190,11 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                     updateModel();
                 }
             }
+        };
+
+        $scope.toggleDisabled = function (idx) {
+            $scope.nodes[idx].ncDisabled = !$scope.nodes[idx].ncDisabled;
+            updateModel();
         };
 
         $scope.getName = function (idx) {
@@ -288,7 +294,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
         var initIfAllScaffoldsHaveLoaded = function() {
             // Initialize when all scaffolds have loaded
             if ($scope.model.config.contentTypes.length == scaffoldsLoaded) {
-                // Because we're loading the scaffolds async one at a time, we need to 
+                // Because we're loading the scaffolds async one at a time, we need to
                 // sort them explicitly according to the sort order defined by the data type.
                 var contentTypeAliases = [];
                 _.each($scope.model.config.contentTypes, function(contentType) {
@@ -332,6 +338,10 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
             node.id = guid();
             node.ncContentTypeAlias = scaffold.contentTypeAlias;
+            node.ncDisabled = false;
+            if(item) {
+              node.ncDisabled = item.ncDisabled;
+            }
 
             for (var t = 0; t < node.tabs.length; t++) {
                 var tab = node.tabs[t];
@@ -339,7 +349,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                     var prop = tab.properties[p];
                     prop.propertyAlias = prop.alias;
                     prop.alias = $scope.model.alias + "___" + prop.alias;
-                    // Force validation to occur server side as this is the 
+                    // Force validation to occur server side as this is the
                     // only way we can have consistancy between mandatory and
                     // regex validation messages. Not ideal, but it works.
                     prop.validation = {
@@ -369,7 +379,8 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                     var node = $scope.nodes[i];
                     var newValue = {
                         name: node.name,
-                        ncContentTypeAlias: node.ncContentTypeAlias
+                        ncContentTypeAlias: node.ncContentTypeAlias,
+                        ncDisabled: node.ncDisabled
                     };
                     for (var t = 0; t < node.tabs.length; t++) {
                         var tab = node.tabs[t];

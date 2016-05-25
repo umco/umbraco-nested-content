@@ -64,6 +64,12 @@ namespace Our.Umbraco.NestedContent.Extensions
                             continue;
                         }
 
+                        JToken disabled;
+                        if (item.TryGetValue("ncDisabled", out disabled) && disabled.Value<bool>())
+                        {
+                            continue;
+                        }
+
                         var publishedContentType = PublishedContentType.Get(PublishedItemType.Content, contentTypeAlias);
                         if (publishedContentType == null)
                         {
