@@ -8,7 +8,7 @@
         $scope.add = function() {
             $scope.model.value.push({
                     // As per PR #4, all stored content type aliases must be prefixed "nc" for easier recognition.
-                    // For good measure we'll also prefix the tab alias "nc" 
+                    // For good measure we'll also prefix the tab alias "nc"
                     ncAlias: "",
                     ncTabAlias: "",
                     nameTemplate: ""
@@ -65,6 +65,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
         //console.log($scope);
 
         var inited = false;
+          var draggedRteSettings = {};
 
         _.each($scope.model.config.contentTypes, function (contentType) {
             contentType.nameExp = !!contentType.nameTemplate
@@ -229,7 +230,9 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             start: function (ev, ui) {
                 // Yea, yea, we shouldn't modify the dom, sue me
                 $("#nested-content--" + $scope.model.id + " .umb-rte textarea").each(function () {
-                    tinymce.execCommand('mceRemoveEditor', false, $(this).attr('id'));
+                    var id = $(this).attr('id');
+                    draggedRteSettings[id] = _.findWhere(tinyMCE.editors, { id: id }).settings;
+                    tinymce.execCommand('mceRemoveEditor', false, id);
                     $(this).css("visibility", "hidden");
                 });
                 $scope.$apply(function () {
@@ -238,8 +241,10 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             },
             stop: function (ev, ui) {
                 $("#nested-content--" + $scope.model.id + " .umb-rte textarea").each(function () {
-                    tinymce.execCommand('mceAddEditor', true, $(this).attr('id'));
-                    $(this).css("visibility", "visible");
+                    var id = $(this).attr('id');
+                    draggedRteSettings[id] = draggedRteSettings[id] || _.findWhere(tinyMCE.editors, { id: id }).settings;
+                    tinymce.execCommand('mceRemoveEditor', true, id);
+                    tinyMCE.init(draggedRteSettings[id]);
                 });
                 $scope.$apply(function () {
                     $scope.sorting = false;
@@ -288,7 +293,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
         var initIfAllScaffoldsHaveLoaded = function() {
             // Initialize when all scaffolds have loaded
             if ($scope.model.config.contentTypes.length == scaffoldsLoaded) {
-                // Because we're loading the scaffolds async one at a time, we need to 
+                // Because we're loading the scaffolds async one at a time, we need to
                 // sort them explicitly according to the sort order defined by the data type.
                 var contentTypeAliases = [];
                 _.each($scope.model.config.contentTypes, function(contentType) {
@@ -339,7 +344,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                     var prop = tab.properties[p];
                     prop.propertyAlias = prop.alias;
                     prop.alias = $scope.model.alias + "___" + prop.alias;
-                    // Force validation to occur server side as this is the 
+                    // Force validation to occur server side as this is the
                     // only way we can have consistancy between mandatory and
                     // regex validation messages. Not ideal, but it works.
                     prop.validation = {
