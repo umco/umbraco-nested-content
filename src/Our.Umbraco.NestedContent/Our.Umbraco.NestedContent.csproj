@@ -228,6 +228,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrap.cs" />
+    <Compile Include="Extensions\PublishedPropertyTypeExtensions.cs" />
+    <Compile Include="Converters\SingleNestedContentValueConverter.cs" />
     <Compile Include="Converters\NestedContentValueConverter.cs" />
     <Compile Include="Extensions\ContentTypeServiceExtensions.cs" />
     <Compile Include="Extensions\PreValueCollectionExtensions.cs" />
@@ -243,7 +245,6 @@
   <ItemGroup>
     <Content Include="Web\UI\App_Plugins\NestedContent\Js\nestedcontent.controllers.js" />
     <Content Include="Web\UI\App_Plugins\NestedContent\Js\nestedcontent.directives.js" />
-    <Content Include="Web\UI\App_Plugins\NestedContent\Js\nestedcontent.services.js" />
     <Content Include="Web\UI\App_Plugins\NestedContent\Js\nestedcontent.resources.js" />
     <Content Include="Web\UI\App_Plugins\NestedContent\Views\nestedcontent.editor.html" />
     <Content Include="Web\UI\App_Plugins\NestedContent\Views\nestedcontent.doctypepicker.html" />
@@ -257,9 +258,9 @@
   <PropertyGroup>
     <PostBuildEvent>IF %25ComputerName%25 == MBP13-PC-BC (
   IF NOT "$(SolutionDir)" == "*Undefined*" (
-    xcopy /s /y "$(TargetPath)" "C:\Users\Matt\Work\Sandbox\Umbraco\UmbracoCms.7.2.6\bin"
-    xcopy /s /y "$(TargetDir)$(ProjectName).pdb" "C:\Users\Matt\Work\Sandbox\Umbraco\UmbracoCms.7.2.6\bin"
-    xcopy /s /y "$(ProjectDir)Web\UI\*.*" "C:\Users\Matt\Work\Sandbox\Umbraco\UmbracoCms.7.2.6"
+    xcopy /s /y "$(TargetPath)" "C:\Users\Matt\Work\Sandbox\Umbraco\UmbracoUHangoutDemo\bin"
+    xcopy /s /y "$(TargetDir)$(ProjectName).pdb" "C:\Users\Matt\Work\Sandbox\Umbraco\UmbracoUHangoutDemo\bin"
+    xcopy /s /y "$(ProjectDir)Web\UI\*.*" "C:\Users\Matt\Work\Sandbox\Umbraco\UmbracoUHangoutDemo"
   )
 )</PostBuildEvent>
   </PropertyGroup>

@@ -15,10 +15,12 @@ namespace Our.Umbraco.NestedContent.Models
         private readonly IEnumerable<IPublishedProperty> _properties;
         private readonly int _sortOrder;
         private readonly bool _isPreviewing;
+        private readonly IPublishedContent _containerNode;
 
         public DetachedPublishedContent(string name,
             PublishedContentType contentType,
             IEnumerable<IPublishedProperty> properties,
+            IPublishedContent containerNode = null,
             int sortOrder = 0,
             bool isPreviewing = false)
         {
@@ -27,6 +29,7 @@ namespace Our.Umbraco.NestedContent.Models
             _properties = properties;
             _sortOrder = sortOrder;
             _isPreviewing = isPreviewing;
+            _containerNode = containerNode;
         }
 
         public override int Id
@@ -109,22 +112,22 @@ namespace Our.Umbraco.NestedContent.Models
 
         public override string WriterName
         {
-            get { return null; }
+            get { return _containerNode != null ? _containerNode.WriterName : null; }
         }
 
         public override string CreatorName
         {
-            get { return null; }
+            get { return _containerNode != null ? _containerNode.CreatorName : null; }
         }
 
         public override int WriterId
         {
-            get { return 0; }
+            get { return _containerNode != null ? _containerNode.WriterId : 0; }
         }
 
         public override int CreatorId
         {
-            get { return 0; }
+            get { return _containerNode != null ? _containerNode.CreatorId : 0; }
         }
 
         public override string Path
@@ -134,17 +137,17 @@ namespace Our.Umbraco.NestedContent.Models
 
         public override DateTime CreateDate
         {
-            get { return DateTime.MinValue; }
+            get { return _containerNode != null ? _containerNode.CreateDate : DateTime.MinValue; }
         }
 
         public override DateTime UpdateDate
         {
-            get { return DateTime.MinValue; }
+            get { return _containerNode != null ? _containerNode.UpdateDate : DateTime.MinValue; }
         }
 
         public override Guid Version
         {
-            get { return Guid.Empty; }
+            get { return _containerNode != null ? _containerNode.Version : Guid.Empty; }
         }
 
         public override int Level

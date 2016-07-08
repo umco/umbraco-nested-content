@@ -5,13 +5,13 @@
                 <tr>
                     <th/>
                     <th>
-                        Document type
+                        Document Type
                     </th>
                     <th>
-                        Tab alias
+                        Tab
                     </th>
                     <th>
-                        Name template
+                        Name Template
                     </th>
                     <th />
                 </tr>
@@ -21,12 +21,14 @@
                     <td class="icon icon-navigation">
                     </td>
                     <td>
-                        <select id="{{model.alias}}_select"
-                                ng-options="dt.alias as dt.name for dt in model.docTypes | orderBy: 'name'"
-                                ng-model="config.ncAlias" required></select>
+                        <select id="{{model.alias}}_doctype_select"
+                            ng-options="dt.alias as dt.name for dt in model.docTypes | orderBy: 'name'"
+                            ng-model="config.ncAlias" required></select>
                     </td>
                     <td>
-                        <input type="text" ng-model="config.ncTabAlias" />
+                        <select id="{{model.alias}}_tab_select"
+                            ng-options="t for t in selectedDocTypeTabs(config)"
+                            ng-model="config.ncTabAlias" required></select>
                     </td>
                     <td>
                         <input type="text" ng-model="config.nameTemplate" />
@@ -46,7 +48,7 @@
     <div class="nested-content__help-text" ng-show="showHelpText">
         <p>
             <b>Tab:</b><br/>
-            Enter the alias of the tab who's properties should be displayed. If left blank, the first tab on the doc type will be used.            
+            Select the tab who's properties should be displayed. If left blank, the first tab on the doc type will be used.            
         </p>
         <p>
             <b>Name template:</b><br/>

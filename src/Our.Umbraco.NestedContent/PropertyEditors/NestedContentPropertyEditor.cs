@@ -1,7 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,7 +11,6 @@ using Umbraco.Core.Models;
 using Umbraco.Core.Models.Editors;
 using Umbraco.Core.PropertyEditors;
 using Umbraco.Core.Services;
-using umbraco.editorControls.SettingControls;
 using Umbraco.Web.PropertyEditors;
 
 namespace Our.Umbraco.NestedContent.PropertyEditors
@@ -151,7 +149,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
                     foreach (var propKey in propValueKeys)
                     {
-                        var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
+                        var propType = contentType.CompositionPropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType == null)
                         {
                             if (IsSystemPropertyKey(propKey) == false)
@@ -216,7 +214,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
                     foreach (var propKey in propValueKeys)
                     {
-                        var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
+                        var propType = contentType.CompositionPropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType == null)
                         {
                             if (IsSystemPropertyKey(propKey) == false)
@@ -262,7 +260,11 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
                 var value = JsonConvert.DeserializeObject<List<object>>(editorValue.Value.ToString());
                 if (value == null)
-                    return string.Empty;
+                    return null;
+
+                // Issue #38 - Keep recursive property lookups working
+                if (!value.Any()) 
+                    return null;
 
                 // Process value
                 for (var i = 0; i < value.Count; i++)
@@ -280,7 +282,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
                     foreach (var propKey in propValueKeys)
                     {
-                        var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
+                        var propType = contentType.CompositionPropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType == null)
                         {
                             if (IsSystemPropertyKey(propKey) == false)
@@ -327,6 +329,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                 if (value == null)
                     yield break;
 
+                IDataTypeService dataTypeService = ApplicationContext.Current.Services.DataTypeService;
                 for (var i = 0; i < value.Count; i++)
                 {
                     var o = value[i];
@@ -342,18 +345,20 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
                     foreach (var propKey in propValueKeys)
                     {
-                        var propType = contentType.PropertyTypes.FirstOrDefault(x => x.Alias == propKey);
+                        var propType = contentType.CompositionPropertyTypes.FirstOrDefault(x => x.Alias == propKey);
                         if (propType != null)
                         {
-                            // It would be better to pass this off to the individual property editors
-                            // to validate themselves and pass the result down, however a lot of the
-                            // validation checking code in core seems to be internal so for now we'll
-                            // just replicate the mandatory / regex validation checks ourselves.
-                            // This does of course mean we will miss any custom validators a property
-                            // editor may have registered by itself, and it also means we can only
-                            // validate to a single depth so having a complex property editor in a 
-                            // doc type could get passed validation if it can't be validated from it's
-                            // stored value alone.
+                            PreValueCollection propPrevalues = dataTypeService.GetPreValuesCollectionByDataTypeId(propType.DataTypeDefinitionId);
+                            PropertyEditor propertyEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
+
+                            foreach (IPropertyValidator validator in propertyEditor.ValueEditor.Validators)
+                            {
+                                foreach (ValidationResult result in validator.Validate(propValues[propKey], propPrevalues, propertyEditor))
+                                {
+                                    result.ErrorMessage = "Item " + (i + 1) + " '" + propType.Name + "' " + result.ErrorMessage;
+                                    yield return result;
+                                }
+                            }
 
                             // Check mandatory
                             if (propType.Mandatory)

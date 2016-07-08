@@ -22,7 +22,8 @@ namespace Our.Umbraco.NestedContent.Web.Controllers
                     guid = x.Key,
                     name = x.Name,
                     alias = x.Alias,
-                    icon = x.Icon
+                    icon = x.Icon,
+                    tabs = x.CompositionPropertyGroups.Select(y => y.Name).Distinct()
                 });
         }
     }
