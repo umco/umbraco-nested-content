@@ -7,9 +7,7 @@ using Umbraco.Core.PropertyEditors;
 
 namespace Our.Umbraco.NestedContent.Converters
 {
-    [PropertyValueCache(PropertyCacheValue.All, PropertyCacheLevel.Content)]
-    [PropertyValueType(typeof(IPublishedContent))]
-    public class SingleNestedContentValueConverter : PropertyValueConverterBase
+    public class SingleNestedContentValueConverter : PropertyValueConverterBase, IPropertyValueConverterMeta
     {
         public override bool IsConverter(PublishedPropertyType propertyType)
         {
@@ -28,6 +26,16 @@ namespace Our.Umbraco.NestedContent.Converters
             }
 
             return null;
+        }
+
+        public virtual Type GetPropertyValueType(PublishedPropertyType propertyType)
+        {
+            return typeof(IPublishedContent);
+        }
+
+        public virtual PropertyCacheLevel GetPropertyCacheLevel(PublishedPropertyType propertyType, PropertyCacheValue cacheValue)
+        {
+            return PropertyCacheLevel.Content;
         }
     }
 }

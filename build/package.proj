@@ -18,7 +18,7 @@
 	<PropertyGroup>
 		<ProjectName>Our.Umbraco.NestedContent</ProjectName>
 		<PackageName>Nested Content</PackageName>
-		<MinUmbracoVersion>7.1.4</MinUmbracoVersion>
+		<MinUmbracoVersion>7.1.5</MinUmbracoVersion>
 		<Readme>Nested Content is a list editing property editor for Umbraco 7.1+</Readme>
 		<AuthorName>Matt Brailsford, Lee Kelleher</AuthorName>
 		<AuthorUrl>https://github.com/leekelleher/umbraco-nested-content/graphs/contributors</AuthorUrl>
