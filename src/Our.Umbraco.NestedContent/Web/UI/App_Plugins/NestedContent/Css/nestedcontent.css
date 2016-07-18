@@ -185,3 +185,12 @@
 .form-horizontal .nested-content--narrow .controls-row .umb-dropdown {
     width: 99%;
 }
+
+#blender-grid-editor-parameter .nested-content__icon {
+    padding: 4px 4px;
+}
+
+    #blender-grid-editor-parameter .nested-content__icon i {
+        margin-left: 2px;
+        margin-right: 2px;
+    }
