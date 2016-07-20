@@ -32,7 +32,7 @@
         return {
             restrict: "E",
             replace: true,
-            templateUrl: "/App_Plugins/NestedContent/Views/nestedcontent.editor.html",
+            templateUrl: Umbraco.Sys.ServerVariables.umbracoSettings.appPluginsPath + "/NestedContent/Views/nestedcontent.editor.html",
             scope: {
                 ngModel: '=',
                 tabAlias: '='
