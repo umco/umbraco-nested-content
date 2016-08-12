@@ -2,7 +2,7 @@
     function ($q, $http, umbRequestHelper) {
         return {
             getContentTypes: function () {
-                var url = "/umbraco/backoffice/NestedContent/NestedContentApi/GetContentTypes";
+                var url = Umbraco.Sys.ServerVariables.umbracoSettings.umbracoPath + "/backoffice/NestedContent/NestedContentApi/GetContentTypes";
                 return umbRequestHelper.resourcePromise(
                     $http.get(url),
                     'Failed to retrieve content types'
