@@ -31,7 +31,7 @@
 	<PropertyGroup>
 		<PackageId>Our.Umbraco.NestedContent</PackageId>
 		<NuGetPackageName>Umbraco Nested Content</NuGetPackageName>
-		<Copyright>Copyright &#169; 2015 Matt Brailsford, Lee Kelleher, Our Umbraco and other contributors</Copyright>
+		<Copyright>Copyright &#169; 2015 Umbrella Inc, Our Umbraco and other contributors</Copyright>
 		<Owners>Matt Brailsford, Lee Kelleher</Owners>
 		<IconUrl>https://our.umbraco.org/media/wiki/145710/635623752021571595_ncpng.png</IconUrl>
 		<Tags>umbraco list editor</Tags>

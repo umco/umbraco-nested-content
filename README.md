@@ -21,7 +21,7 @@ Nested Content can be installed from either Our Umbraco or NuGet package reposit
 
 To install from Our Umbraco, please download the package from:
 
-> [https://our.umbraco.org/projects/backoffice-extensions/nested-content](https://our.umbraco.org/projects/backoffice-extensions/nested-content) 
+> <https://our.umbraco.org/projects/backoffice-extensions/nested-content>
 
 #### NuGet package repository
 
