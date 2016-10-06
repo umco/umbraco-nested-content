@@ -30,7 +30,7 @@
 	<!-- NUGET ONLY PROPERTIES -->
 	<PropertyGroup>
 		<PackageId>Our.Umbraco.NestedContent</PackageId>
-		<NuGetPackageName>Umbraco Nested Content</NuGetPackageName>
+		<NuGetPackageName>Nested Content for Umbraco</NuGetPackageName>
 		<Copyright>Copyright &#169; 2015 Umbrella Inc, Our Umbraco and other contributors</Copyright>
 		<Owners>Matt Brailsford, Lee Kelleher</Owners>
 		<IconUrl>https://our.umbraco.org/media/wiki/145710/635623752021571595_ncpng.png</IconUrl>
