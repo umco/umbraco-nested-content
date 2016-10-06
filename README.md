@@ -63,6 +63,7 @@ Please be aware that not all property-editors will work within Nested Content. T
 * Radiobutton List (default Umbraco core)
 * Repeatable Textstring (default Umbraco core) - this works in the back-office, but due to a bug in the value-converter it will produce additional blank entries
 * Upload (default Umbraco core)
+* Dropdown List Multiple (default Umbraco core)
 
 ---
 
