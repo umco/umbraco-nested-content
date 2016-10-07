@@ -37,6 +37,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                 {NestedContentPreValueEditor.ContentTypesPreValueKey, ""},
                 {"minItems", 0},
                 {"maxItems", 0},
+                {"allowDisabling", "0"},
                 {"confirmDeletes", "1"},
                 {"showIcons", "1"}
             };
@@ -67,6 +68,9 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
             [PreValueField("showIcons", "Show Icons", "boolean", Description = "Set whether to show the items doc type icon in the list.")]
             public string ShowIcons { get; set; }
+
+            [PreValueField("allowDisabling", "Allow Disabling", "boolean", Description = "Set whether to allow disabling items.")]
+            public string AllowDisabling { get; set; }
 
             [PreValueField("hideLabel", "Hide Label", "boolean", Description = "Set whether to hide the editor label and have the list take up the full width of the editor window.")]
             public string HideLabel { get; set; }
@@ -389,7 +393,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
         private static bool IsSystemPropertyKey(string propKey)
         {
-            return propKey == "name" || propKey == ContentTypeAliasPropertyKey;
+            return propKey == "name" || propKey == ContentTypeAliasPropertyKey || propKey == "ncDisabled";
         }
     }
 }
