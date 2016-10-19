@@ -319,7 +319,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 }
 
                 // If there is only one item, set it as current node
-                if ($scope.singleMode) {
+                if ($scope.singleMode || ($scope.nodes.length == 1 && $scope.maxItems == 1)) {
                     $scope.currentNode = $scope.nodes[0];
                 }
 

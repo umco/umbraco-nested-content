@@ -12,10 +12,10 @@
                     <div class="nested-content__heading"><i ng-if="showIcons" class="icon" ng-class="$parent.getIcon($index)"></i><span ng-bind="$parent.getName($index)"></span></div>
 
                     <div class="nested-content__icons">
-                        <a class="nested-content__icon nested-content__icon--edit" title="{{editIconTitle}}" ng-class="{ 'nested-content__icon--active' : $parent.realCurrentNode.id == node.id }" ng-click="$parent.editNode($index); $event.stopPropagation();" prevent-default>
+                        <a class="nested-content__icon nested-content__icon--edit" title="{{editIconTitle}}" ng-class="{ 'nested-content__icon--active' : $parent.realCurrentNode.id == node.id }" ng-click="$parent.editNode($index); $event.stopPropagation();" ng-show="$parent.maxItems > 1" prevent-default>
                             <i class="icon icon-edit"></i>
                         </a>
-                        <a class="nested-content__icon nested-content__icon--move" title="{{moveIconTitle}}" ng-click="$event.stopPropagation();" prevent-default>
+                        <a class="nested-content__icon nested-content__icon--move" title="{{moveIconTitle}}" ng-click="$event.stopPropagation();" ng-show="$parent.nodes.length > 1" prevent-default>
                             <i class="icon icon-navigation"></i>
                         </a>
                         <a class="nested-content__icon nested-content__icon--delete" title="{{deleteIconTitle}}" ng-class="{ 'nested-content__icon--disabled': $parent.nodes.length <= $parent.minItems }" ng-click="$parent.deleteNode($index); $event.stopPropagation();" prevent-default>
@@ -29,7 +29,7 @@
                     <nested-content-editor ng-model="node" tab-alias="ncTabAlias"/>
                 </div>
             </div>
-
+             
         </div>
 
         <div class="nested-content__help-text" ng-show="nodes.length == 0">
