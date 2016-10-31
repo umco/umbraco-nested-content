@@ -205,7 +205,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                     var item = $scope.model.value[idx]; 
 
                     // Add a temporary index property
-                    item.index = (idx + 1);
+                    item['$index'] = (idx + 1);
 
                     var newName = contentType.nameExp(item);
                     if (newName && (newName = $.trim(newName))) {
@@ -213,7 +213,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                     }
 
                     // Delete the index property as we don't want to persist it
-                    delete item.index;
+                    delete item['$index'];
                 }
 
             }
