@@ -21,17 +21,17 @@
 		<MinUmbracoVersion>7.1.4</MinUmbracoVersion>
 		<Readme>Nested Content is a list editing property editor for Umbraco 7.1+</Readme>
 		<AuthorName>Matt Brailsford, Lee Kelleher</AuthorName>
-		<AuthorUrl>https://github.com/leekelleher/umbraco-nested-content/graphs/contributors</AuthorUrl>
+		<AuthorUrl>https://github.com/umco/umbraco-nested-content/graphs/contributors</AuthorUrl>
 		<PackageLicenseName>MIT license</PackageLicenseName>
 		<PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
-		<ProjectUrl>https://github.com/leekelleher/umbraco-nested-content</ProjectUrl>
+		<ProjectUrl>https://github.com/umco/umbraco-nested-content</ProjectUrl>
 	</PropertyGroup>
 
 	<!-- NUGET ONLY PROPERTIES -->
 	<PropertyGroup>
 		<PackageId>Our.Umbraco.NestedContent</PackageId>
-		<NuGetPackageName>Umbraco Nested Content</NuGetPackageName>
-		<Copyright>Copyright &#169; 2015 Matt Brailsford, Lee Kelleher, Our Umbraco and other contributors</Copyright>
+		<NuGetPackageName>Nested Content for Umbraco</NuGetPackageName>
+		<Copyright>Copyright &#169; 2015 Umbrella Inc, Our Umbraco and other contributors</Copyright>
 		<Owners>Matt Brailsford, Lee Kelleher</Owners>
 		<IconUrl>https://our.umbraco.org/media/wiki/145710/635623752021571595_ncpng.png</IconUrl>
 		<Tags>umbraco list editor</Tags>

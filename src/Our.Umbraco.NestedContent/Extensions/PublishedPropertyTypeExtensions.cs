@@ -36,7 +36,7 @@ namespace Our.Umbraco.NestedContent.Extensions
                    int.TryParse(preValueDictionary["maxItems"], out maxItems) && maxItems == 1;
         }
 
-        public static object ConvertPropertyToNestedContent(this PublishedPropertyType propertyType, object source)
+        public static object ConvertPropertyToNestedContent(this PublishedPropertyType propertyType, object source, bool preview)
         {
             using (DisposableTimer.DebugDuration<PublishedPropertyType>(string.Format("ConvertPropertyToNestedContent ({0})", propertyType.DataTypeId)))
             {
@@ -78,7 +78,7 @@ namespace Our.Umbraco.NestedContent.Extensions
                             var propType = publishedContentType.GetPropertyType(jProp.Key);
                             if (propType != null)
                             {
-                                properties.Add(new DetachedPublishedProperty(propType, jProp.Value));
+                                properties.Add(new DetachedPublishedProperty(propType, jProp.Value, preview));
                             }
                         }
 
@@ -98,7 +98,8 @@ namespace Our.Umbraco.NestedContent.Extensions
                             publishedContentType,
                             properties.ToArray(),
                             containerNode,
-                            i));
+                            i,
+                            preview));
                     }
 
                     if (propertyType.IsSingleNestedContentProperty())

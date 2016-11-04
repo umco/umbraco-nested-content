@@ -46,7 +46,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
 
         protected override PreValueEditor CreatePreValueEditor()
         {
-            return new NestedContentPreValueEditor();
+            return new NestedContentPreValueEditor(); 
         }
 
         internal class NestedContentPreValueEditor : PreValueEditor
