@@ -15,7 +15,7 @@ using Umbraco.Web.PropertyEditors;
 
 namespace Our.Umbraco.NestedContent.PropertyEditors
 {
-    [PropertyEditor(NestedContentPropertyEditor.PropertyEditorAlias, "Nested Content", "/App_Plugins/NestedContent/Views/nestedcontent.html", ValueType = "JSON")]
+    [PropertyEditor(NestedContentPropertyEditor.PropertyEditorAlias, "Nested Content", "~/App_Plugins/NestedContent/Views/nestedcontent.html", ValueType = "JSON")]
     public class NestedContentPropertyEditor : PropertyEditor
     {
         internal const string ContentTypeAliasPropertyKey = "ncContentTypeAlias";
@@ -53,7 +53,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
         {
             internal const string ContentTypesPreValueKey = "contentTypes";
 
-            [PreValueField(ContentTypesPreValueKey, "Doc Types", "/App_Plugins/NestedContent/Views/nestedcontent.doctypepicker.html", Description = "Select the doc types to use as the data blueprint.")]
+            [PreValueField(ContentTypesPreValueKey, "Doc Types", "~/App_Plugins/NestedContent/Views/nestedcontent.doctypepicker.html", Description = "Select the doc types to use as the data blueprint.")]
             public string[] ContentTypes { get; set; }
 
             [PreValueField("minItems", "Min Items", "number", Description = "Set the minimum number of items allowed.")]
