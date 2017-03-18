@@ -55,15 +55,16 @@ A PDF download is also available: [Nested Content - Developers Guide v1.0.pdf](d
 
 ## Known Issues
 
-Please be aware that not all property-editors will work within Nested Content. The following property-editors are known to have compatibility issues:
+Please be aware that not all property-editors will work within Nested Content. The following Umbraco core property-editors are known to have compatibility issues:
 
-* Checkbox List (default Umbraco core)
-* Image Cropper (default Umbraco core)
-* Macro Container (default Umbraco core)
-* Radiobutton List (default Umbraco core)
-* Repeatable Textstring (default Umbraco core) - this works in the back-office, but due to a bug in the value-converter it will produce additional blank entries
-* Upload (default Umbraco core)
-* Dropdown List Multiple (default Umbraco core)
+* Checkbox List
+* Dropdown List Multiple
+* Image Cropper
+* Macro Container
+* Radiobutton List
+* Repeatable Textstring - _this works in the back-office, but due to a bug in the value-converter it will produce additional blank entries_
+* Tags - _this appears to work, but by design it is intended to work once per page_
+* Upload
 
 ---
 
