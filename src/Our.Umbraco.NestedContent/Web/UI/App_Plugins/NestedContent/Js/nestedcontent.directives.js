@@ -2,25 +2,53 @@
 
     function () {
 
-        var link = function ($scope, element, attrs, ctrl) {
-            $scope.nodeContext = $scope.model = $scope.ngModel;
+        var link = function ($scope) {
 
-            var tab = $scope.ngModel.tabs[0];
+            // Clone the model because some property editors
+            // do weird things like updating and config values
+            // so we want to ensure we start from a fresh every
+            // time, we'll just sync the value back when we need to
+            $scope.model = angular.copy($scope.ngModel);
+            $scope.nodeContext = $scope.model;
+
+            // Find the selected tab
+            var selectedTab = $scope.model.tabs[0];
 
             if ($scope.tabAlias) {
-                angular.forEach($scope.ngModel.tabs, function (value, key) {
-                    if (value.alias.toLowerCase() == $scope.tabAlias.toLowerCase()) {
-                        tab = value;
+                angular.forEach($scope.model.tabs, function (tab) {
+                    if (tab.alias.toLowerCase() == $scope.tabAlias.toLowerCase()) {
+                        selectedTab = tab;
                         return;
                     }
                 });
             }
 
-            $scope.tab = tab;
+            $scope.tab = selectedTab;
 
+            // Listen for sync request
             var unsubscribe = $scope.$on("ncSyncVal", function (ev, args) {
                 if (args.id === $scope.model.id) {
+
+                    // Tell inner controls we are submitting
                     $scope.$broadcast("formSubmitting", { scope: $scope });
+
+                    // Sync the values back
+                    angular.forEach($scope.ngModel.tabs, function (tab) {
+                        if (tab.alias.toLowerCase() == selectedTab.alias.toLowerCase()) {
+
+                            var localPropsMap = selectedTab.properties.reduce(function (map, obj) {
+                                map[obj.alias] = obj;
+                                return map;
+                            }, {});
+
+                            angular.forEach(tab.properties, function (prop) {
+                                if (localPropsMap.hasOwnProperty(prop.alias)) {
+                                    prop.value = localPropsMap[prop.alias].value;
+                                }
+                            });
+
+                        }
+                    });
                 }
             });
 
@@ -32,7 +60,7 @@
         return {
             restrict: "E",
             replace: true,
-            templateUrl: "/App_Plugins/NestedContent/Views/nestedcontent.editor.html",
+            templateUrl: Umbraco.Sys.ServerVariables.umbracoSettings.appPluginsPath + "/NestedContent/Views/nestedcontent.editor.html",
             scope: {
                 ngModel: '=',
                 tabAlias: '='
@@ -54,7 +82,7 @@
 //            }
 //        });
 //    }
-    
+
 //    return {
 //        restrict: "E",
 //        replace: true,
