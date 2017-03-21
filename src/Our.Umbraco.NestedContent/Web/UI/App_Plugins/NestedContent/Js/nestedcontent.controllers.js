@@ -56,9 +56,10 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
     "$timeout",
     "contentResource",
     "localizationService",
+    "iconHelper",
     "Our.Umbraco.NestedContent.Resources.NestedContentResources",
 
-    function ($scope, $interpolate, $filter, $timeout, contentResource, localizationService, ncResources) {
+    function ($scope, $interpolate, $filter, $timeout, contentResource, localizationService, iconHelper, ncResources) {
 
         //$scope.model.config.contentTypes;
         //$scope.model.config.minItems;
@@ -139,15 +140,10 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             // this could be used for future limiting on node types
             $scope.overlayMenu.scaffolds = [];
             _.each($scope.scaffolds, function (scaffold) {
-                var icon = scaffold.icon;
-                // workaround for when no icon is chosen for a doctype
-                if (icon == ".sprTreeFolder") {
-                    icon = "icon-folder";
-                }
                 $scope.overlayMenu.scaffolds.push({
                     alias: scaffold.contentTypeAlias,
                     name: scaffold.contentTypeName,
-                    icon: icon
+                    icon: iconHelper.convertFromLegacyIcon(scaffold.icon)
                 });
             });
 
@@ -246,7 +242,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
         $scope.getIcon = function (idx) {
             var scaffold = $scope.getScaffold($scope.model.value[idx].ncContentTypeAlias);
-            return scaffold && scaffold.icon && scaffold.icon !== ".sprTreeFolder" ? scaffold.icon : "icon-folder";
+            return scaffold && scaffold.icon ? iconHelper.convertFromLegacyIcon(scaffold.icon) : "icon-folder";
         }
 
         $scope.sortableOptions = {
