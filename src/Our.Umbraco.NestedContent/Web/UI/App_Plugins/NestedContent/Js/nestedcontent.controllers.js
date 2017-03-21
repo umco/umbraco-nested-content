@@ -113,12 +113,20 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             style: {}
         };
 
+        // helper to force the current form into the dirty state
+        $scope.setDirty = function () {
+            if ($scope.propertyForm) {
+                $scope.propertyForm.$setDirty();
+            }
+        };
+
         $scope.addNode = function (alias) {
             var scaffold = $scope.getScaffold(alias);
 
             var newNode = initNode(scaffold, null);
 
             $scope.currentNode = newNode;
+            $scope.setDirty();
 
             $scope.closeNodeTypePicker();
         };
@@ -190,10 +198,12 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 if ($scope.model.config.confirmDeletes && $scope.model.config.confirmDeletes == 1) {
                     if (confirm("Are you sure you want to delete this item?")) {
                         $scope.nodes.splice(idx, 1);
+                        $scope.setDirty();
                         updateModel();
                     }
                 } else {
                     $scope.nodes.splice(idx, 1);
+                    $scope.setDirty();
                     updateModel();
                 }
             }
@@ -252,6 +262,9 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 $scope.$apply(function () {
                     $scope.sorting = true;
                 });
+            },
+            update: function (ev, ui) {
+                $scope.setDirty();
             },
             stop: function (ev, ui) {
                 $("#nested-content--" + $scope.model.id + " .umb-rte textarea").each(function () {
