@@ -378,7 +378,10 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
         var updateModel = function () {
             if ($scope.realCurrentNode) {
+                var currentTabIndex = $scope.nodes.findIndex(getCurrentNodeIndex);
+                var gridProps = $scope.realCurrentNode.tabs[0].properties.map(backupGridConfig);
                 $scope.$broadcast("ncSyncVal", { id: $scope.realCurrentNode.id });
+                $scope.nodes[currentTabIndex].tabs[0].properties = $scope.nodes[currentTabIndex].tabs[0].properties.map(restoreGridConfig.bind(null, gridProps));
             }
             if (inited) {
                 var newValues = [];
@@ -423,6 +426,18 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             }
             return _p8() + _p8(true) + _p8(true) + _p8();
         };
+
+        var getCurrentNodeIndex = function (node) {
+            return node.id === $scope.realCurrentNode.id;
+        }
+
+        var backupGridConfig = function (prop) {
+            return prop.editor == "Umbraco.Grid" ? prop : false;
+        }
+
+        var restoreGridConfig = function (gridProps, prop, i) {
+            return gridProps[i] || prop;
+        }
     }
 
 ]);
