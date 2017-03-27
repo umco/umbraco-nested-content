@@ -1,6 +1,8 @@
 ﻿angular.module("umbraco.directives").directive('nestedContentEditor', [
 
-    function () {
+    "Our.Umbraco.NestedContent.Services.NestedContentCallbacks",
+
+    function (NestedContentCallbacks) {
 
         var link = function ($scope) {
 
@@ -28,6 +30,9 @@
             // Listen for sync request
             var unsubscribe = $scope.$on("ncSyncVal", function (ev, args) {
                 if (args.id === $scope.model.id) {
+
+                    // Run callback
+                    NestedContentCallbacks.call("ncBeforeFormSubmitting", { scope: $scope });
 
                     // Tell inner controls we are submitting
                     $scope.$broadcast("formSubmitting", { scope: $scope });
