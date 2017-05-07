@@ -231,7 +231,6 @@
   <ItemGroup>
     <Compile Include="Bootstrap.cs" />
     <Compile Include="Extensions\PublishedPropertyTypeExtensions.cs" />
-    <Compile Include="Converters\SingleNestedContentValueConverter.cs" />
     <Compile Include="Converters\NestedContentValueConverter.cs" />
     <Compile Include="Extensions\ContentTypeServiceExtensions.cs" />
     <Compile Include="Extensions\PreValueCollectionExtensions.cs" />
