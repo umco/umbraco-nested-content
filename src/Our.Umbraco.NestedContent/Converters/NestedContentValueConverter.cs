@@ -13,7 +13,7 @@ namespace Our.Umbraco.NestedContent.Converters
     {
         public override bool IsConverter(PublishedPropertyType propertyType)
         {
-            return propertyType.IsNestedContentProperty() && !propertyType.IsSingleNestedContentProperty();
+            return propertyType.IsNestedContentProperty();
         }
 
         public override object ConvertDataToSource(PublishedPropertyType propertyType, object source, bool preview)

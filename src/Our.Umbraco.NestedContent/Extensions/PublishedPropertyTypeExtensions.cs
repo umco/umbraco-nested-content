@@ -102,11 +102,6 @@ namespace Our.Umbraco.NestedContent.Extensions
                             preview));
                     }
 
-                    if (propertyType.IsSingleNestedContentProperty())
-                    {
-                        return processedValue.FirstOrDefault();
-                    }
-
                     return processedValue;
                 }
             }
