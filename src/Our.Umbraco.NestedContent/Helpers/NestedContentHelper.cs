@@ -25,7 +25,7 @@ namespace Our.Umbraco.NestedContent.Helpers
 
             var cache = ApplicationContext.Current?.ApplicationCache?.RuntimeCache;
             if (cache != null) 
-                return (TItem) cache.GetCacheItem(string.Concat("Our.Umbraco.NestedContent.", key), () => valueFactory);
+                return (TItem) cache.GetCacheItem(string.Concat("Our.Umbraco.NestedContent.", key), () => valueFactory());
 
             return valueFactory();
         }
