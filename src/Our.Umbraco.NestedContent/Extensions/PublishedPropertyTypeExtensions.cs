@@ -29,10 +29,8 @@ namespace Our.Umbraco.NestedContent.Extensions
             var preValueCollection = NestedContentHelper.GetPreValuesCollectionByDataTypeId(publishedProperty.DataTypeId);
             var preValueDictionary = preValueCollection.AsPreValueDictionary();
 
-            int minItems, maxItems;
-            return preValueDictionary.ContainsKey("minItems") &&
-                   int.TryParse(preValueDictionary["minItems"], out minItems) && minItems == 1
-                   && preValueDictionary.ContainsKey("maxItems") &&
+            int maxItems;
+            return preValueDictionary.ContainsKey("maxItems") &&
                    int.TryParse(preValueDictionary["maxItems"], out maxItems) && maxItems == 1;
         }
 
