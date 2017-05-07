@@ -235,6 +235,7 @@
     <Compile Include="Extensions\ContentTypeServiceExtensions.cs" />
     <Compile Include="Extensions\PreValueCollectionExtensions.cs" />
     <Compile Include="Helpers\NestedContentHelper.cs" />
+    <Compile Include="Models\ContentTypeConfiguration.cs" />
     <Compile Include="Models\DetachedPublishedContent.cs" />
     <Compile Include="Models\DetachedPublishedProperty.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

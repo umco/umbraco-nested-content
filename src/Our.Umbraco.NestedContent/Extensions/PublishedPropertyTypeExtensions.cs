@@ -106,5 +106,18 @@ namespace Our.Umbraco.NestedContent.Extensions
 
             return null;
         }
+
+        public static IEnumerable<ContentTypeConfiguration> GetContentTypeConfiguration(this PublishedPropertyType propertyType)
+        {
+            string jsonConfig;
+            if (propertyType.TryGetPreValue("contentTypes", out jsonConfig) && !jsonConfig.IsNullOrWhiteSpace())
+            {
+                var config = JsonConvert.DeserializeObject<List<ContentTypeConfiguration>>(jsonConfig);
+
+                return config;
+            }
+
+            return Enumerable.Empty<ContentTypeConfiguration>();
+        }
     }
 }
