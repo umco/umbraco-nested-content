@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -118,6 +120,39 @@ namespace Our.Umbraco.NestedContent.Extensions
             }
 
             return Enumerable.Empty<ContentTypeConfiguration>();
+        }
+
+        public static Type GetPropertyValueType(this PublishedPropertyType propertyType)
+        {
+            return NestedContentHelper.GetCacheItem($"GetPropertyValueType_{propertyType?.DataTypeId}", () =>
+            {
+                var itemType = typeof(IEnumerable<>);
+
+                if (PublishedContentModelFactoryResolver.Current?.HasValue == true)
+                {
+                    var docTypeConfig = propertyType.GetContentTypeConfiguration();
+                    var aliasesAllowed = docTypeConfig?.Select(r => r?.ncAlias).Where(i => i != null).Distinct().ToArray();
+                    if (aliasesAllowed?.Length == 1)
+                    {
+                        // only strongly type when a single doctype is allowed
+
+                        var modelType = PublishedContentExtensions.GetModelType(aliasesAllowed[0]);
+                        if (modelType != null)
+                        {
+                            itemType = modelType;
+                        }
+                    }
+                }
+
+                return propertyType.IsSingleNestedContentProperty() ? itemType : typeof(IEnumerable<>).MakeGenericType(itemType);
+            });
+        }
+
+        public static IEnumerable<IPublishedContent> ConvertToModels(this PublishedPropertyType propertyType, object source)
+        {
+            var content = ((IEnumerable<IPublishedContent>)source).TryCreateTypedModels();
+
+            return content;
         }
     }
 }
