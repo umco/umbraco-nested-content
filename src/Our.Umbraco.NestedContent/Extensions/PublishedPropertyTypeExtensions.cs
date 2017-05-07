@@ -124,15 +124,15 @@ namespace Our.Umbraco.NestedContent.Extensions
 
         public static Type GetPropertyValueType(this PublishedPropertyType propertyType)
         {
-            return NestedContentHelper.GetCacheItem($"GetPropertyValueType_{propertyType?.DataTypeId}", () =>
+            return NestedContentHelper.GetCacheItem(string.Concat("GetPropertyValueType_", propertyType.DataTypeId), () =>
             {
                 var itemType = typeof(IEnumerable<>);
 
-                if (PublishedContentModelFactoryResolver.Current?.HasValue == true)
+                if (PublishedContentModelFactoryResolver.Current != null && PublishedContentModelFactoryResolver.Current.HasValue)
                 {
                     var docTypeConfig = propertyType.GetContentTypeConfiguration();
-                    var aliasesAllowed = docTypeConfig?.Select(r => r?.ncAlias).Where(i => i != null).Distinct().ToArray();
-                    if (aliasesAllowed?.Length == 1)
+                    var aliasesAllowed = docTypeConfig != null ? docTypeConfig.Select(r => r != null ? r.ncAlias : null).Where(i => i != null).Distinct().ToArray() : null;
+                    if (aliasesAllowed != null && aliasesAllowed.Length == 1)
                     {
                         // only strongly type when a single doctype is allowed
 

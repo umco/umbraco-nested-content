@@ -17,17 +17,21 @@ namespace Our.Umbraco.NestedContent.Extensions
 
         public static bool TryGetPreValue<T>(this PublishedPropertyType publishedProperty, string key, out T value)
         {
-            if (publishedProperty == null) throw new ArgumentNullException(nameof(publishedProperty));
-            if (string.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
-            
-            var prevalueDictionary = NestedContentHelper.GetPreValuesCollectionByDataTypeId(publishedProperty.DataTypeId)?.PreValuesAsDictionary;
-            
-            PreValue prevalue;
-            if (prevalueDictionary != null && prevalueDictionary.TryGetValue(key, out prevalue))
+            if (publishedProperty == null) throw new ArgumentNullException("publishedProperty");
+            if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("key");
+
+            var preValuesCollection = NestedContentHelper.GetPreValuesCollectionByDataTypeId(publishedProperty.DataTypeId);
+            if (preValuesCollection != null)
             {
-                var converter = TypeDescriptor.GetConverter(typeof(T));
-                value = (T)converter.ConvertFromString(prevalue.Value);
-                return true;
+                var prevalueDictionary = preValuesCollection.PreValuesAsDictionary;
+            
+                PreValue prevalue;
+                if (prevalueDictionary != null && prevalueDictionary.TryGetValue(key, out prevalue))
+                {
+                    var converter = TypeDescriptor.GetConverter(typeof(T));
+                    value = (T)converter.ConvertFromString(prevalue.Value);
+                    return true;
+                }
             }
 
             value = default(T);

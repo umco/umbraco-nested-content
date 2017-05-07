@@ -13,26 +13,40 @@ namespace Our.Umbraco.NestedContent.Extensions
     {
         public static IEnumerable<IPublishedContent> TryCreateTypedModels(this IEnumerable<IPublishedContent> contentItems)
         {
-            return contentItems?.Select(item => item.TryCreateTypedModel());
+            return contentItems != null ? contentItems.Select(item => item.TryCreateTypedModel()) : null;
         }
 
         public static IPublishedContent TryCreateTypedModel(this IPublishedContent content)
         {
             var factoryResolver = PublishedContentModelFactoryResolver.Current;
 
-            return factoryResolver?.HasValue == true ? factoryResolver.Factory?.CreateModel(content) : content;
+            if (factoryResolver != null && factoryResolver.HasValue && factoryResolver.Factory != null)
+            {
+                return factoryResolver.Factory.CreateModel(content);
+            }
+
+            return content;
         }
 
         public static Type GetModelType(string alias)
         {
-            var typedModels = PluginManager.Current?.ResolveTypesWithAttribute<PublishedContentModel, PublishedContentModelAttribute>();
+            if (PluginManager.Current == null) return null;
 
-            return typedModels?.FirstOrDefault(t => t.GetCustomAttribute<PublishedContentModelAttribute>(false)?.ContentTypeAlias?.Equals(alias, StringComparison.OrdinalIgnoreCase) == true);
+            var typedModels = PluginManager.Current.ResolveTypesWithAttribute<PublishedContentModel, PublishedContentModelAttribute>();
+
+            if (typedModels == null) return null;
+
+            var type = (from t in typedModels
+                let attr = t.GetCustomAttribute<PublishedContentModelAttribute>(false)
+                where attr != null && !attr.ContentTypeAlias.IsNullOrWhiteSpace() && attr.ContentTypeAlias.Equals(alias, StringComparison.OrdinalIgnoreCase)
+                select t).FirstOrDefault();
+
+            return type;
         }
 
         public static Type GetModelType(this IPublishedContent content)
         {
-            return GetModelType(content?.DocumentTypeAlias);
+            return GetModelType(content != null ? content.DocumentTypeAlias : null);
         }
     }
 }

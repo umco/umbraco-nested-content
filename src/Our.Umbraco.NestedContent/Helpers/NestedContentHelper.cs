@@ -21,11 +21,14 @@ namespace Our.Umbraco.NestedContent.Helpers
 
         public static TItem GetCacheItem<TItem>(string key, Func<TItem> valueFactory)
         {
-            if (valueFactory == null) throw new ArgumentNullException(nameof(valueFactory));
+            if (valueFactory == null) throw new ArgumentNullException("valueFactory");
 
-            var cache = ApplicationContext.Current?.ApplicationCache?.RuntimeCache;
-            if (cache != null) 
-                return (TItem) cache.GetCacheItem(string.Concat("Our.Umbraco.NestedContent.", key), () => valueFactory());
+            if (ApplicationContext.Current != null && ApplicationContext.Current.ApplicationCache != null)
+            {
+                var cache = ApplicationContext.Current.ApplicationCache.RuntimeCache;
+                if (cache != null) 
+                    return (TItem) cache.GetCacheItem(string.Concat("Our.Umbraco.NestedContent.", key), () => valueFactory());
+            }
 
             return valueFactory();
         }

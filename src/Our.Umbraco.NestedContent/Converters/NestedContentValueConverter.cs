@@ -42,7 +42,8 @@ namespace Our.Umbraco.NestedContent.Converters
             {
                 var values = propertyType.ConvertToModels(source);
 
-                return propertyType.IsSingleNestedContentProperty() ? (object) values?.FirstOrDefault() : values;
+                if (values != null) 
+                    return propertyType.IsSingleNestedContentProperty() ? (object) values.FirstOrDefault() : values;
             }
             catch (Exception e)
             {
