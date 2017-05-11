@@ -157,24 +157,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 return;
             }
 
-            // Position off screen till we are visible and can calculate offset
-            $scope.overlayMenu.style.top = -1000;
-            $scope.overlayMenu.style.left = -1000;
-
             $scope.overlayMenu.show = true;
-
-            $timeout(function () {
-
-                var wrapper = $("#contentwrapper");
-                var el = $("#nested-content--" + $scope.model.id + " .nested-content__node-type-picker .cell-tools-menu");
-
-                var offset = el.offsetRelative("#contentwrapper");
-
-                $scope.overlayMenu.style.top = (Math.round(wrapper.height() / 2) + offset.top) - Math.round(el.height() / 2);
-                $scope.overlayMenu.style.left = (Math.round(wrapper.width() / 2) + offset.left) - Math.round(el.width() / 2);
-
-            });
-
         };
 
         $scope.closeNodeTypePicker = function () {
