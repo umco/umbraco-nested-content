@@ -93,13 +93,23 @@ namespace Our.Umbraco.NestedContent.Extensions
                         var pcr = UmbracoContext.Current.PublishedContentRequest;
                         var containerNode = pcr != null && pcr.HasPublishedContent ? pcr.PublishedContent : null;
 
-                        processedValue.Add(new DetachedPublishedContent(
+                        // Create the model based on our implementation of IPublishedContent
+                        IPublishedContent content = new DetachedPublishedContent(
                             nameObj == null ? null : nameObj.ToString(),
                             publishedContentType,
                             properties.ToArray(),
                             containerNode,
                             i,
-                            preview));
+                            preview);
+
+                        if (PublishedContentModelFactoryResolver.HasCurrent)
+                        {
+                            // Let the current model factory create a typed model to wrap our model
+                            content = PublishedContentModelFactoryResolver.Current.Factory.CreateModel(content);
+                        }
+
+                        // Add the (typed) model as a result
+                        processedValue.Add(content);
                     }
 
                     if (propertyType.IsSingleNestedContentProperty())
