@@ -239,7 +239,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                         {
                             try
                             {
-                                // Create a fake property using the property abd stored value
+                                // Create a fake property using the property and stored value
                                 var prop = new Property(propType, propValues[propKey] == null ? null : propValues[propKey].ToString());
 
                                 // Lookup the property editor
