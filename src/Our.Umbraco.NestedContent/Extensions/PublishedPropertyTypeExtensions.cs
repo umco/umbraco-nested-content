@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -29,10 +31,8 @@ namespace Our.Umbraco.NestedContent.Extensions
             var preValueCollection = NestedContentHelper.GetPreValuesCollectionByDataTypeId(publishedProperty.DataTypeId);
             var preValueDictionary = preValueCollection.AsPreValueDictionary();
 
-            int minItems, maxItems;
-            return preValueDictionary.ContainsKey("minItems") &&
-                   int.TryParse(preValueDictionary["minItems"], out minItems) && minItems == 1
-                   && preValueDictionary.ContainsKey("maxItems") &&
+            int maxItems;
+            return preValueDictionary.ContainsKey("maxItems") &&
                    int.TryParse(preValueDictionary["maxItems"], out maxItems) && maxItems == 1;
         }
 
@@ -102,16 +102,57 @@ namespace Our.Umbraco.NestedContent.Extensions
                             preview));
                     }
 
-                    if (propertyType.IsSingleNestedContentProperty())
-                    {
-                        return processedValue.FirstOrDefault();
-                    }
-
                     return processedValue;
                 }
             }
 
             return null;
+        }
+
+        public static IEnumerable<ContentTypeConfiguration> GetContentTypeConfiguration(this PublishedPropertyType propertyType)
+        {
+            string jsonConfig;
+            if (propertyType.TryGetPreValue("contentTypes", out jsonConfig) && !jsonConfig.IsNullOrWhiteSpace())
+            {
+                var config = JsonConvert.DeserializeObject<List<ContentTypeConfiguration>>(jsonConfig);
+
+                return config;
+            }
+
+            return Enumerable.Empty<ContentTypeConfiguration>();
+        }
+
+        public static Type GetPropertyValueType(this PublishedPropertyType propertyType)
+        {
+            return NestedContentHelper.GetCacheItem(string.Concat("GetPropertyValueType_", propertyType.DataTypeId), () =>
+            {
+                var itemType = typeof(IEnumerable<>);
+
+                if (PublishedContentModelFactoryResolver.Current != null && PublishedContentModelFactoryResolver.Current.HasValue)
+                {
+                    var docTypeConfig = propertyType.GetContentTypeConfiguration();
+                    var aliasesAllowed = docTypeConfig != null ? docTypeConfig.Select(r => r != null ? r.ncAlias : null).Where(i => i != null).Distinct().ToArray() : null;
+                    if (aliasesAllowed != null && aliasesAllowed.Length == 1)
+                    {
+                        // only strongly type when a single doctype is allowed
+
+                        var modelType = PublishedContentExtensions.GetModelType(aliasesAllowed[0]);
+                        if (modelType != null)
+                        {
+                            itemType = modelType;
+                        }
+                    }
+                }
+
+                return propertyType.IsSingleNestedContentProperty() ? itemType : typeof(IEnumerable<>).MakeGenericType(itemType);
+            });
+        }
+
+        public static IEnumerable<IPublishedContent> ConvertToModels(this PublishedPropertyType propertyType, object source)
+        {
+            var content = ((IEnumerable<IPublishedContent>)source).TryCreateTypedModels();
+
+            return content;
         }
     }
 }

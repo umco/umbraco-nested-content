@@ -19,6 +19,20 @@ namespace Our.Umbraco.NestedContent.Helpers
             return preValueCollection;
         }
 
+        public static TItem GetCacheItem<TItem>(string key, Func<TItem> valueFactory)
+        {
+            if (valueFactory == null) throw new ArgumentNullException("valueFactory");
+
+            if (ApplicationContext.Current != null && ApplicationContext.Current.ApplicationCache != null)
+            {
+                var cache = ApplicationContext.Current.ApplicationCache.RuntimeCache;
+                if (cache != null) 
+                    return (TItem) cache.GetCacheItem(string.Concat("Our.Umbraco.NestedContent.", key), () => valueFactory());
+            }
+
+            return valueFactory();
+        }
+
         public static string GetContentTypeAliasFromItem(JObject item)
         {
             var contentTypeAliasProperty = item[NestedContentPropertyEditor.ContentTypeAliasPropertyKey];
