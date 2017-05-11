@@ -170,8 +170,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                                 var propEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
 
                                 // Get the editor to do it's conversion, and store it back
-                                propValues[propKey] = propEditor.ValueEditor.ConvertDbToString(prop, propType,
-                                    ApplicationContext.Current.Services.DataTypeService);
+                                propValues[propKey] = propEditor.ValueEditor.ConvertDbToString(prop, propType, dataTypeService);
                             }
                             catch (InvalidOperationException)
                             {
@@ -246,8 +245,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                                 var propEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
 
                                 // Get the editor to do it's conversion
-                                var newValue = propEditor.ValueEditor.ConvertDbToEditor(prop, propType,
-                                    ApplicationContext.Current.Services.DataTypeService);
+                                var newValue = propEditor.ValueEditor.ConvertDbToEditor(prop, propType, dataTypeService);
 
                                 // Store the value back
                                 propValues[propKey] = (newValue == null) ? null : JToken.FromObject(newValue);
