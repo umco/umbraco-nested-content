@@ -1,6 +1,6 @@
 # Nested Content
 
-[![Build status](https://img.shields.io/appveyor/ci/leekelleher/umbraco-nested-content.svg)](https://ci.appveyor.com/project/leekelleher/umbraco-nested-content)
+[![Build status](https://img.shields.io/appveyor/ci/UMCO/umbraco-nested-content.svg)](https://ci.appveyor.com/project/UMCO/umbraco-nested-content)
 [![NuGet release](https://img.shields.io/nuget/v/Our.Umbraco.NestedContent.svg)](https://www.nuget.org/packages/Our.Umbraco.NestedContent)
 [![Our Umbraco project page](https://img.shields.io/badge/our-umbraco-orange.svg)](https://our.umbraco.org/projects/backoffice-extensions/nested-content)
 [![Chat on Gitter](https://img.shields.io/badge/gitter-join_chat-green.svg)](https://gitter.im/leekelleher/umbraco-nested-content)
@@ -55,15 +55,16 @@ A PDF download is also available: [Nested Content - Developers Guide v1.0.pdf](d
 
 ## Known Issues
 
-Please be aware that not all property-editors will work within Nested Content. The following property-editors are known to have compatibility issues:
+Please be aware that not all property-editors will work within Nested Content. The following Umbraco core property-editors are known to have compatibility issues:
 
-* Checkbox List (default Umbraco core)
-* Image Cropper (default Umbraco core)
-* Macro Container (default Umbraco core)
-* Radiobutton List (default Umbraco core)
-* Repeatable Textstring (default Umbraco core) - this works in the back-office, but due to a bug in the value-converter it will produce additional blank entries
-* Upload (default Umbraco core)
-* Dropdown List Multiple (default Umbraco core)
+* Checkbox List
+* Dropdown List Multiple
+* Image Cropper
+* Macro Container
+* Radiobutton List
+* Repeatable Textstring - _this works in the back-office, but due to a bug in the value-converter it will produce additional blank entries_
+* Tags - _this appears to work, but by design it is intended to work once per page_
+* Upload
 
 ---
 

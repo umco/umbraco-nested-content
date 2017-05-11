@@ -5,19 +5,19 @@
 
     function ($scope, ncResources) {
 
-        $scope.add = function() {
+        $scope.add = function () {
             $scope.model.value.push({
-                    // As per PR #4, all stored content type aliases must be prefixed "nc" for easier recognition.
-                    // For good measure we'll also prefix the tab alias "nc" 
-                    ncAlias: "",
-                    ncTabAlias: "",
-                    nameTemplate: ""
-                }
+                // As per PR #4, all stored content type aliases must be prefixed "nc" for easier recognition.
+                // For good measure we'll also prefix the tab alias "nc" 
+                ncAlias: "",
+                ncTabAlias: "",
+                nameTemplate: ""
+            }
             );
         }
 
-        $scope.selectedDocTypeTabs = function(cfg) {
-            var dt = _.find($scope.model.docTypes, function(itm) {
+        $scope.selectedDocTypeTabs = function (cfg) {
+            var dt = _.find($scope.model.docTypes, function (itm) {
                 return itm.alias.toLowerCase() == cfg.ncAlias.toLowerCase();
             });
             var tabs = dt ? dt.tabs : [];
@@ -53,11 +53,13 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
     "$scope",
     "$interpolate",
     "$filter",
+    "$timeout",
     "contentResource",
     "localizationService",
+    "iconHelper",
     "Our.Umbraco.NestedContent.Resources.NestedContentResources",
 
-    function ($scope, $interpolate, $filter, contentResource, localizationService, ncResources) {
+    function ($scope, $interpolate, $filter, $timeout, contentResource, localizationService, iconHelper, ncResources) {
 
         //$scope.model.config.contentTypes;
         //$scope.model.config.minItems;
@@ -112,12 +114,20 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             style: {}
         };
 
+        // helper to force the current form into the dirty state
+        $scope.setDirty = function () {
+            if ($scope.propertyForm) {
+                $scope.propertyForm.$setDirty();
+            }
+        };
+
         $scope.addNode = function (alias) {
             var scaffold = $scope.getScaffold(alias);
 
             var newNode = initNode(scaffold, null);
 
             $scope.currentNode = newNode;
+            $scope.setDirty();
 
             $scope.closeNodeTypePicker();
         };
@@ -130,15 +140,10 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             // this could be used for future limiting on node types
             $scope.overlayMenu.scaffolds = [];
             _.each($scope.scaffolds, function (scaffold) {
-                var icon = scaffold.icon;
-                // workaround for when no icon is chosen for a doctype
-                if (icon == ".sprTreeFolder") {
-                    icon = "icon-folder";
-                }
                 $scope.overlayMenu.scaffolds.push({
                     alias: scaffold.contentTypeAlias,
                     name: scaffold.contentTypeName,
-                    icon: icon
+                    icon: iconHelper.convertFromLegacyIcon(scaffold.icon)
                 });
             });
 
@@ -152,16 +157,6 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 return;
             }
 
-            // calculate overlay position
-            // - yeah... it's jQuery (ungh!) but that's how the Grid does it.
-            var offset = $(event.target).offset();
-            var scrollTop = $(event.target).closest(".umb-panel-body").scrollTop();
-            if (offset.top < 400) {
-                $scope.overlayMenu.style.top = 300 + scrollTop;
-            }
-            else {
-                $scope.overlayMenu.style.top = offset.top - 150 + scrollTop;
-            }
             $scope.overlayMenu.show = true;
         };
 
@@ -182,10 +177,12 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 if ($scope.model.config.confirmDeletes && $scope.model.config.confirmDeletes == 1) {
                     if (confirm("Are you sure you want to delete this item?")) {
                         $scope.nodes.splice(idx, 1);
+                        $scope.setDirty();
                         updateModel();
                     }
                 } else {
                     $scope.nodes.splice(idx, 1);
+                    $scope.setDirty();
                     updateModel();
                 }
             }
@@ -200,10 +197,19 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 var contentType = $scope.getContentTypeConfig($scope.model.value[idx].ncContentTypeAlias);
 
                 if (contentType != null && contentType.nameExp) {
-                    var newName = contentType.nameExp($scope.model.value[idx]); // Run it against the stored dictionary value, NOT the node object
+                    // Run the expression against the stored dictionary value, NOT the node object
+                    var item = $scope.model.value[idx];
+
+                    // Add a temporary index property
+                    item['$index'] = (idx + 1);
+
+                    var newName = contentType.nameExp(item);
                     if (newName && (newName = $.trim(newName))) {
                         name = newName;
                     }
+
+                    // Delete the index property as we don't want to persist it
+                    delete item['$index'];
                 }
 
             }
@@ -219,7 +225,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
         $scope.getIcon = function (idx) {
             var scaffold = $scope.getScaffold($scope.model.value[idx].ncContentTypeAlias);
-            return scaffold && scaffold.icon && scaffold.icon !== ".sprTreeFolder" ? scaffold.icon : "icon-folder";
+            return scaffold && scaffold.icon ? iconHelper.convertFromLegacyIcon(scaffold.icon) : "icon-folder";
         }
 
         $scope.sortableOptions = {
@@ -235,6 +241,9 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 $scope.$apply(function () {
                     $scope.sorting = true;
                 });
+            },
+            update: function (ev, ui) {
+                $scope.setDirty();
             },
             stop: function (ev, ui) {
                 $("#nested-content--" + $scope.model.id + " .umb-rte textarea").each(function () {
@@ -264,9 +273,9 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
         var scaffoldsLoaded = 0;
         $scope.scaffolds = [];
         _.each($scope.model.config.contentTypes, function (contentType) {
-            contentResource.getScaffold(-20, contentType.ncAlias).then(function(scaffold) {
+            contentResource.getScaffold(-20, contentType.ncAlias).then(function (scaffold) {
                 // remove all tabs except the specified tab
-                var tab = _.find(scaffold.tabs, function(tab) {
+                var tab = _.find(scaffold.tabs, function (tab) {
                     return tab.id != 0 && (tab.alias.toLowerCase() == contentType.ncTabAlias.toLowerCase() || contentType.ncTabAlias == "");
                 });
                 scaffold.tabs = [];
@@ -279,19 +288,19 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
                 scaffoldsLoaded++;
                 initIfAllScaffoldsHaveLoaded();
-            }, function(error) {
+            }, function (error) {
                 scaffoldsLoaded++;
                 initIfAllScaffoldsHaveLoaded();
             });
         });
 
-        var initIfAllScaffoldsHaveLoaded = function() {
+        var initIfAllScaffoldsHaveLoaded = function () {
             // Initialize when all scaffolds have loaded
             if ($scope.model.config.contentTypes.length == scaffoldsLoaded) {
                 // Because we're loading the scaffolds async one at a time, we need to 
                 // sort them explicitly according to the sort order defined by the data type.
                 var contentTypeAliases = [];
-                _.each($scope.model.config.contentTypes, function(contentType) {
+                _.each($scope.model.config.contentTypes, function (contentType) {
                     contentTypeAliases.push(contentType.ncAlias);
                 });
                 $scope.scaffolds = $filter('orderBy')($scope.scaffolds, function (s) {
@@ -319,7 +328,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 }
 
                 // If there is only one item, set it as current node
-                if ($scope.singleMode) {
+                if ($scope.singleMode || ($scope.nodes.length == 1 && $scope.maxItems == 1)) {
                     $scope.currentNode = $scope.nodes[0];
                 }
 
@@ -409,3 +418,47 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
     }
 
 ]);
+
+// offsetRelative (or, if you prefer, positionRelative)
+(function ($) {
+
+    $.fn.offsetRelative = function (ancestor) {
+        var positionedAncestor = $(ancestor);
+        var object = $(this);
+
+        var relativeOffset = { left: 0, top: 0 };
+
+        var leftSpacing = parseInt(object.css("margin-left"));
+        leftSpacing += parseInt(object.css("border-left-width"));
+
+        var topSpacing = parseInt(object.css("margin-top"));
+        topSpacing += parseInt(object.css("border-top-width"));
+
+        relativeOffset.left -= leftSpacing;
+        relativeOffset.top -= topSpacing;
+
+        var offsetParent = object.offsetParent();
+
+        while (offsetParent[0] !== positionedAncestor[0] && !offsetParent.is('html')) {
+            var offsetParentPosition = offsetParent.position();
+
+            var offsetParentPositionLeft = offsetParentPosition.left;
+            var offsetParentPositionTop = offsetParentPosition.top;
+
+            relativeOffset.top -= offsetParentPositionTop;
+            relativeOffset.left -= offsetParentPositionLeft;
+
+            leftSpacing = parseInt(offsetParent.css("margin-left"));
+            leftSpacing += parseInt(offsetParent.css("border-left-width"));
+            topSpacing = parseInt(offsetParent.css("margin-top"));
+            topSpacing += parseInt(offsetParent.css("border-top-width"));
+
+            relativeOffset.left -= leftSpacing;
+            relativeOffset.top -= topSpacing;
+
+            offsetParent = offsetParent.offsetParent();
+        }
+        return relativeOffset;
+    };
+
+}(jQuery));

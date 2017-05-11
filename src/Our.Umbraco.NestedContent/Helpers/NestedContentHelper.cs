@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using Our.Umbraco.NestedContent.Extensions;
+using Our.Umbraco.NestedContent.Models;
 using Our.Umbraco.NestedContent.PropertyEditors;
 using Umbraco.Core;
 using Umbraco.Core.Models;
+using Umbraco.Core.Persistence;
 
 namespace Our.Umbraco.NestedContent.Helpers
 {
@@ -121,5 +124,112 @@ namespace Our.Umbraco.NestedContent.Helpers
         }
 
         #endregion
+
+        public static void RemapDocTypeAlias(string oldAlias, string newAlias, Transaction transaction = null)
+        {
+            var db = ApplicationContext.Current.DatabaseContext.Database;
+
+            // Update references in property data
+            // We do 2 very similar replace statements, but one is without spaces in the JSON, the other is with spaces 
+            // as we can't guarantee what format it will actually get saved in
+            var sql1 = string.Format(@"UPDATE cmsPropertyData
+SET dataNtext = CAST(REPLACE(REPLACE(CAST(dataNtext AS nvarchar(max)), '""ncContentTypeAlias"":""{0}""', '""ncContentTypeAlias"":""{1}""'), '""ncContentTypeAlias"": ""{0}""', '""ncContentTypeAlias"": ""{1}""') AS ntext)
+WHERE dataNtext LIKE '%""ncContentTypeAlias"":""{0}""%' OR dataNtext LIKE '%""ncContentTypeAlias"": ""{0}""%'", oldAlias, newAlias);
+
+            // Update references in prevalue
+            // We do 2 very similar replace statements, but one is without spaces in the JSON, the other is with spaces 
+            // as we can't guarantee what format it will actually get saved in
+            var sql2 = string.Format(@"UPDATE cmsDataTypePreValues
+SET [value] = CAST(REPLACE(REPLACE(CAST([value] AS nvarchar(max)), '""ncAlias"":""{0}""', '""ncAlias"":""{1}""'), '""ncAlias"": ""{0}""', '""ncAlias"": ""{1}""') AS ntext)
+WHERE [value] LIKE '%""ncAlias"":""{0}""%' OR  [value] LIKE '%""ncAlias"": ""{0}""%'", oldAlias, newAlias);
+
+            if (transaction == null)
+            {
+                using (var tr = db.GetTransaction())
+                {
+                    db.Execute(sql1);
+                    db.Execute(sql2);
+                    tr.Complete();
+                }
+            }
+            else
+            {
+                db.Execute(sql1);
+                db.Execute(sql2);
+            }
+        }
+
+        public static void RemapPropertyAlias(string docTypeAlias, string oldAlias, string newAlias, Transaction transaction = null)
+        {
+            var db = ApplicationContext.Current.DatabaseContext.Database;
+
+            // Update references in property data
+            // We have to do it in code because there could be nested JSON so 
+            // we need to make sure it only replaces at the specific level only
+            Action doQuery = () =>
+            {
+                var rows = GetPropertyDataRows(docTypeAlias);
+                foreach (var row in rows)
+                {
+                    var tokens = row.Data.SelectTokens(string.Format("$..[?(@.ncContentTypeAlias == '{0}' && @.{1})]", docTypeAlias, oldAlias)).ToList();
+                    if (tokens.Any())
+                    {
+                        foreach (var token in tokens)
+                        {
+                            token[oldAlias].Rename(newAlias);
+                        }
+                        db.Execute("UPDATE [cmsPropertyData] SET [dataNtext] = @0 WHERE [id] = @1", row.RawData, row.Id);
+                    }
+                }
+            };
+
+            if (transaction == null)
+            {
+                using (var tr = db.GetTransaction())
+                {
+                    doQuery();
+                    tr.Complete();
+                }
+            }
+            else
+            {
+                doQuery();
+            }
+        }
+
+        public static void RemapDocTypeTabAlias(string docTypeAlias, string oldAlias, string newAlias, Transaction transaction = null)
+        {
+            var db = ApplicationContext.Current.DatabaseContext.Database;
+
+            // Update references in prevalue 
+            // We do 2 very similar replace statements, but one is without spaces in the JSON, the other is with spaces 
+            // as we can't guarantee what format it will actually get saved in
+            var sql1 = string.Format(@"UPDATE cmsDataTypePreValues
+SET [value] = CAST(REPLACE(REPLACE(CAST([value] AS nvarchar(max)), '""ncTabAlias"":""{0}""', '""ncTabAlias"":""{1}""'), '""ncTabAlias"": ""{0}""', '""ncTabAlias"": ""{1}""') AS ntext)
+WHERE [value] LIKE '%""ncAlias"":""{2}""%' OR  [value] LIKE '%""ncAlias"": ""{2}""%'", oldAlias, newAlias, docTypeAlias);
+
+            if (transaction == null)
+            {
+                using (var tr = db.GetTransaction())
+                {
+                    db.Execute(sql1);
+                    tr.Complete();
+                }
+            }
+            else
+            {
+                db.Execute(sql1);
+            }
+        }
+
+        // TODO: RemapNestedContentNameTemplate?
+
+        private static IEnumerable<JsonDbRow> GetPropertyDataRows(string docTypeAlias)
+        {
+            var db = ApplicationContext.Current.DatabaseContext.Database;
+            return db.Query<JsonDbRow>(string.Format(
+                @"SELECT [id], [dataNtext] as [rawdata] FROM cmsPropertyData WHERE dataNtext LIKE '%""ncContentTypeAlias"":""{0}""%' OR dataNtext LIKE '%""ncContentTypeAlias"": ""{0}""%'",
+                docTypeAlias)).ToList();
+        }
     }
 }
