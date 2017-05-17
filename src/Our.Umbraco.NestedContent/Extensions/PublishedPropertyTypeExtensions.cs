@@ -90,7 +90,7 @@ namespace Our.Umbraco.NestedContent.Extensions
                         }
 
                         // Get the current request node we are embedded in
-                        var pcr = UmbracoContext.Current.PublishedContentRequest;
+                        var pcr = UmbracoContext.Current == null ? null : UmbracoContext.Current.PublishedContentRequest;
                         var containerNode = pcr != null && pcr.HasPublishedContent ? pcr.PublishedContent : null;
 
                         // Create the model based on our implementation of IPublishedContent
