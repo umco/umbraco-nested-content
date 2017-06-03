@@ -16,17 +16,6 @@
             );
         }
 
-        $scope.selectedDocTypeTabs = function (cfg) {
-            var dt = _.find($scope.model.docTypes, function (itm) {
-                return itm.alias.toLowerCase() == cfg.ncAlias.toLowerCase();
-            });
-            var tabs = dt ? dt.tabs : [];
-            if (!_.contains(tabs, cfg.ncTabAlias)) {
-                cfg.ncTabAlias = tabs[0];
-            }
-            return tabs;
-        }
-
         $scope.remove = function (index) {
             $scope.model.value.splice(index, 1);
         }
@@ -37,8 +26,15 @@
             handle: ".icon-navigation"
         };
 
+        $scope.dtTabs = {};
+
         ncResources.getContentTypes().then(function (docTypes) {
             $scope.model.docTypes = docTypes;
+
+            // Populate document type tab dictionary
+            docTypes.forEach(function(value) {
+                $scope.dtTabs[value.alias] = value.tabs;
+            });
         });
 
         if (!$scope.model.value) {
