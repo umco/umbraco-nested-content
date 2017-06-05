@@ -13,13 +13,21 @@ namespace Our.Umbraco.NestedContent.Helpers
 {
     internal static class NestedContentHelper
     {
+        private const string CacheKeyPrefix = "Our.Umbraco.NestedContent.GetPreValuesCollectionByDataTypeId_";
+
         public static PreValueCollection GetPreValuesCollectionByDataTypeId(int dtdId)
         {
             var preValueCollection = (PreValueCollection)ApplicationContext.Current.ApplicationCache.RuntimeCache.GetCacheItem(
-                string.Concat("Our.Umbraco.NestedContent.GetPreValuesCollectionByDataTypeId_", dtdId),
+                string.Concat(CacheKeyPrefix, dtdId),
                 () => ApplicationContext.Current.Services.DataTypeService.GetPreValuesCollectionByDataTypeId(dtdId));
 
             return preValueCollection;
+        }
+
+        public static void ClearCache(int dtdId)
+        {
+            ApplicationContext.Current.ApplicationCache.RuntimeCache.ClearCacheItem(
+                string.Concat(CacheKeyPrefix, dtdId));
         }
 
         public static string GetContentTypeAliasFromItem(JObject item)
