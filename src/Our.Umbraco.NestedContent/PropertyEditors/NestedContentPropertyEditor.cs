@@ -16,7 +16,7 @@ using Umbraco.Web.PropertyEditors;
 
 namespace Our.Umbraco.NestedContent.PropertyEditors
 {
-    [PropertyEditor(NestedContentPropertyEditor.PropertyEditorAlias, "Nested Content", "/App_Plugins/NestedContent/Views/nestedcontent.html", ValueType = "JSON")]
+    [PropertyEditor(NestedContentPropertyEditor.PropertyEditorAlias, "Nested Content", "~/App_Plugins/NestedContent/Views/nestedcontent.html", ValueType = "JSON", Group = "Nested Content")]
     public class NestedContentPropertyEditor : PropertyEditor
     {
         internal const string ContentTypeAliasPropertyKey = "ncContentTypeAlias";
