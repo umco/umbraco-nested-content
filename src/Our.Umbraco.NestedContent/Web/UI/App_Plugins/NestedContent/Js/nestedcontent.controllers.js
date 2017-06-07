@@ -1,4 +1,4 @@
-﻿angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.DocTypePickerController", [
+angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.DocTypePickerController", [
 
     "$scope",
     "Our.Umbraco.NestedContent.Resources.NestedContentResources",
@@ -8,7 +8,7 @@
         $scope.add = function () {
             $scope.model.value.push({
                 // As per PR #4, all stored content type aliases must be prefixed "nc" for easier recognition.
-                // For good measure we'll also prefix the tab alias "nc" 
+                // For good measure we'll also prefix the tab alias "nc"
                 ncAlias: "",
                 ncTabAlias: "",
                 nameTemplate: ""
@@ -293,7 +293,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
         var initIfAllScaffoldsHaveLoaded = function () {
             // Initialize when all scaffolds have loaded
             if ($scope.model.config.contentTypes.length == scaffoldsLoaded) {
-                // Because we're loading the scaffolds async one at a time, we need to 
+                // Because we're loading the scaffolds async one at a time, we need to
                 // sort them explicitly according to the sort order defined by the data type.
                 var contentTypeAliases = [];
                 _.each($scope.model.config.contentTypes, function (contentType) {
@@ -344,7 +344,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                     var prop = tab.properties[p];
                     prop.propertyAlias = prop.alias;
                     prop.alias = $scope.model.alias + "___" + prop.alias;
-                    // Force validation to occur server side as this is the 
+                    // Force validation to occur server side as this is the
                     // only way we can have consistancy between mandatory and
                     // regex validation messages. Not ideal, but it works.
                     prop.validation = {
