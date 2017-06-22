@@ -154,6 +154,10 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             }
 
             $scope.overlayMenu.show = true;
+
+            var offsetLeft = document.getElementById('tree').offsetWidth + document.getElementById('applications').offsetWidth + document.querySelector('.control-label.ng-binding').offsetWidth;
+
+            $scope.overlayMenu.style.marginLeft = offsetLeft / 2;
         };
 
         $scope.closeNodeTypePicker = function () {
