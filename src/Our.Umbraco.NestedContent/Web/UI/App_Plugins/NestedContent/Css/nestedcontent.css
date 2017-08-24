@@ -1,6 +1,7 @@
 ﻿.nested-content
 {
     text-align: center;
+    position: relative;
 }
 
 .nested-content--not-supported
@@ -202,7 +203,22 @@
     width: 99%;
 }
 
-.usky-grid.nested-content__node-type-picker .cell-tools-menu {
+/*.usky-grid.nested-content__node-type-picker .cell-tools-menu {
     position: relative;
     transform: translate(-50%, -25%);
+}*/
+
+.usky-grid.nested-content__node-type-picker{
+    position: fixed;
+    top: 50%;
+    width: 100%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+}
+
+.usky-grid.nested-content__node-type-picker .cell-tools-menu{
+    max-width:90%; 
+    margin-left: auto; 
+    margin-right: auto; 
+    transform: translateX(-50%);
 }
