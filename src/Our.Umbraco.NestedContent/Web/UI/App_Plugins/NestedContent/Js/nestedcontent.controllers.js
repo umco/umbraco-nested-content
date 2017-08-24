@@ -16,17 +16,6 @@
             );
         }
 
-        $scope.selectedDocTypeTabs = function (cfg) {
-            var dt = _.find($scope.model.docTypes, function (itm) {
-                return itm.alias.toLowerCase() == cfg.ncAlias.toLowerCase();
-            });
-            var tabs = dt ? dt.tabs : [];
-            if (!_.contains(tabs, cfg.ncTabAlias)) {
-                cfg.ncTabAlias = tabs[0];
-            }
-            return tabs;
-        }
-
         $scope.remove = function (index) {
             $scope.model.value.splice(index, 1);
         }
@@ -37,8 +26,15 @@
             handle: ".icon-navigation"
         };
 
+        $scope.docTypeTabs = {};
+
         ncResources.getContentTypes().then(function (docTypes) {
             $scope.model.docTypes = docTypes;
+
+            // Populate document type tab dictionary
+            docTypes.forEach(function (value) {
+                $scope.docTypeTabs[value.alias] = value.tabs;
+            });
         });
 
         if (!$scope.model.value) {
@@ -56,9 +52,9 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
     "$timeout",
     "contentResource",
     "localizationService",
-    "Our.Umbraco.NestedContent.Resources.NestedContentResources",
+    "iconHelper",
 
-    function ($scope, $interpolate, $filter, $timeout, contentResource, localizationService, ncResources) {
+    function ($scope, $interpolate, $filter, $timeout, contentResource, localizationService, iconHelper) {
 
         //$scope.model.config.contentTypes;
         //$scope.model.config.minItems;
@@ -113,12 +109,20 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             style: {}
         };
 
+        // helper to force the current form into the dirty state
+        $scope.setDirty = function () {
+            if ($scope.propertyForm) {
+                $scope.propertyForm.$setDirty();
+            }
+        };
+
         $scope.addNode = function (alias) {
             var scaffold = $scope.getScaffold(alias);
 
             var newNode = initNode(scaffold, null);
 
             $scope.currentNode = newNode;
+            $scope.setDirty();
 
             $scope.closeNodeTypePicker();
         };
@@ -131,15 +135,10 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             // this could be used for future limiting on node types
             $scope.overlayMenu.scaffolds = [];
             _.each($scope.scaffolds, function (scaffold) {
-                var icon = scaffold.icon;
-                // workaround for when no icon is chosen for a doctype
-                if (icon == ".sprTreeFolder") {
-                    icon = "icon-folder";
-                }
                 $scope.overlayMenu.scaffolds.push({
                     alias: scaffold.contentTypeAlias,
                     name: scaffold.contentTypeName,
-                    icon: icon
+                    icon: iconHelper.convertFromLegacyIcon(scaffold.icon)
                 });
             });
 
@@ -153,24 +152,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 return;
             }
 
-            // Position off screen till we are visible and can calculate offset
-            $scope.overlayMenu.style.top = -1000;
-            $scope.overlayMenu.style.left = -1000;
-
             $scope.overlayMenu.show = true;
-
-            $timeout(function () {
-
-                var wrapper = $("#contentwrapper");
-                var el = $("#nested-content--" + $scope.model.id + " .nested-content__node-type-picker .cell-tools-menu");
-
-                var offset = el.offsetRelative("#contentwrapper");
-
-                $scope.overlayMenu.style.top = (Math.round(wrapper.height() / 2) + offset.top) - Math.round(el.height() / 2);
-                $scope.overlayMenu.style.left = (Math.round(wrapper.width() / 2) + offset.left) - Math.round(el.width() / 2);
-
-            });
-
         };
 
         $scope.closeNodeTypePicker = function () {
@@ -190,10 +172,12 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 if ($scope.model.config.confirmDeletes && $scope.model.config.confirmDeletes == 1) {
                     if (confirm("Are you sure you want to delete this item?")) {
                         $scope.nodes.splice(idx, 1);
+                        $scope.setDirty();
                         updateModel();
                     }
                 } else {
                     $scope.nodes.splice(idx, 1);
+                    $scope.setDirty();
                     updateModel();
                 }
             }
@@ -236,7 +220,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
 
         $scope.getIcon = function (idx) {
             var scaffold = $scope.getScaffold($scope.model.value[idx].ncContentTypeAlias);
-            return scaffold && scaffold.icon && scaffold.icon !== ".sprTreeFolder" ? scaffold.icon : "icon-folder";
+            return scaffold && scaffold.icon ? iconHelper.convertFromLegacyIcon(scaffold.icon) : "icon-folder";
         }
 
         $scope.sortableOptions = {
@@ -252,6 +236,9 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 $scope.$apply(function () {
                     $scope.sorting = true;
                 });
+            },
+            update: function (ev, ui) {
+                $scope.setDirty();
             },
             stop: function (ev, ui) {
                 $("#nested-content--" + $scope.model.id + " .umb-rte textarea").each(function () {
@@ -277,6 +264,17 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             });
         }
 
+        var notSupported = [
+          "Umbraco.CheckBoxList",
+          "Umbraco.DropDownMultiple",
+          "Umbraco.MacroContainer",
+          "Umbraco.RadioButtonList",
+          "Umbraco.MultipleTextstring",
+          "Umbraco.Tags",
+          "Umbraco.UploadField",
+          "Umbraco.ImageCropper"
+        ];
+
         // Initialize
         var scaffoldsLoaded = 0;
         $scope.scaffolds = [];
@@ -289,6 +287,14 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
                 scaffold.tabs = [];
                 if (tab) {
                     scaffold.tabs.push(tab);
+
+                    angular.forEach(tab.properties,
+                      function (property) {
+                          if (_.find(notSupported, function (x) { return x === property.editor; })) {
+                              property.notSupported = true;
+                              property.notSupportedMessage = "Property " + property.label + " uses editor " + property.editor + " which is not supported by Nested Content.";
+                          }
+                      });
                 }
 
                 // Store the scaffold object
@@ -347,7 +353,7 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
         var initNode = function (scaffold, item) {
             var node = angular.copy(scaffold);
 
-            node.id = guid();
+            node.id = item && item.id ? item.id : UUID.generate();
             node.ncContentTypeAlias = scaffold.contentTypeAlias;
 
             for (var t = 0; t < node.tabs.length; t++) {
@@ -416,57 +422,21 @@ angular.module("umbraco").controller("Our.Umbraco.NestedContent.Controllers.Nest
             unsubscribe();
         });
 
-        var guid = function () {
-            function _p8(s) {
-                var p = (Math.random().toString(16) + "000000000").substr(2, 8);
-                return s ? "-" + p.substr(0, 4) + "-" + p.substr(4, 4) : p;
+        var UUID = (function () {
+            var self = {};
+            var lut = []; for (var i = 0; i < 256; i++) { lut[i] = (i < 16 ? '0' : '') + (i).toString(16); }
+            self.generate = function () {
+                var d0 = Math.random() * 0xffffffff | 0;
+                var d1 = Math.random() * 0xffffffff | 0;
+                var d2 = Math.random() * 0xffffffff | 0;
+                var d3 = Math.random() * 0xffffffff | 0;
+                return lut[d0 & 0xff] + lut[d0 >> 8 & 0xff] + lut[d0 >> 16 & 0xff] + lut[d0 >> 24 & 0xff] + '-' +
+                  lut[d1 & 0xff] + lut[d1 >> 8 & 0xff] + '-' + lut[d1 >> 16 & 0x0f | 0x40] + lut[d1 >> 24 & 0xff] + '-' +
+                  lut[d2 & 0x3f | 0x80] + lut[d2 >> 8 & 0xff] + '-' + lut[d2 >> 16 & 0xff] + lut[d2 >> 24 & 0xff] +
+                  lut[d3 & 0xff] + lut[d3 >> 8 & 0xff] + lut[d3 >> 16 & 0xff] + lut[d3 >> 24 & 0xff];
             }
-            return _p8() + _p8(true) + _p8(true) + _p8();
-        };
+            return self;
+        })();
     }
 
 ]);
-
-// offsetRelative (or, if you prefer, positionRelative)
-(function ($) {
-
-    $.fn.offsetRelative = function (ancestor) {
-        var positionedAncestor = $(ancestor);
-        var object = $(this);
-
-        var relativeOffset = { left: 0, top: 0 };
-
-        var leftSpacing = parseInt(object.css("margin-left"));
-        leftSpacing += parseInt(object.css("border-left-width"));
-
-        var topSpacing = parseInt(object.css("margin-top"));
-        topSpacing += parseInt(object.css("border-top-width"));
-
-        relativeOffset.left -= leftSpacing;
-        relativeOffset.top -= topSpacing;
-
-        var offsetParent = object.offsetParent();
-
-        while (offsetParent[0] !== positionedAncestor[0] && !offsetParent.is('html')) {
-            var offsetParentPosition = offsetParent.position();
-
-            var offsetParentPositionLeft = offsetParentPosition.left;
-            var offsetParentPositionTop = offsetParentPosition.top;
-
-            relativeOffset.top -= offsetParentPositionTop;
-            relativeOffset.left -= offsetParentPositionLeft;
-
-            leftSpacing = parseInt(offsetParent.css("margin-left"));
-            leftSpacing += parseInt(offsetParent.css("border-left-width"));
-            topSpacing = parseInt(offsetParent.css("margin-top"));
-            topSpacing += parseInt(offsetParent.css("border-top-width"));
-
-            relativeOffset.left -= leftSpacing;
-            relativeOffset.top -= topSpacing;
-
-            offsetParent = offsetParent.offsetParent();
-        }
-        return relativeOffset;
-    };
-
-}(jQuery));

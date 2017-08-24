@@ -13,7 +13,7 @@ A nested content property editor for Umbraco 7 that allows you to use Doc Types 
 
 ### Installation
 
-> *Note:* Nested Content has been developed against **Umbraco v7.1.4** and will support that version and above.
+> *Note:* Nested Content has been developed against **Umbraco v7.1.5** and will support that version and above.
 
 Nested Content can be installed from either Our Umbraco or NuGet package repositories, or build manually from the source-code:
 

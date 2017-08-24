@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Our.Umbraco.NestedContent.Extensions;
 using Our.Umbraco.NestedContent.Helpers;
 using Umbraco.Core;
 using Umbraco.Core.Models;
@@ -107,7 +106,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
             {
                 base.ConfigureForDisplay(preValues);
 
-                var asDictionary = preValues.AsPreValueDictionary();
+                var asDictionary = preValues.PreValuesAsDictionary.ToDictionary(x => x.Key, x => x.Value.Value);
                 if (asDictionary.ContainsKey("hideLabel"))
                 {
                     var boolAttempt = asDictionary["hideLabel"].TryConvertTo<bool>();
@@ -170,8 +169,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                                 var propEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
 
                                 // Get the editor to do it's conversion, and store it back
-                                propValues[propKey] = propEditor.ValueEditor.ConvertDbToString(prop, propType,
-                                    ApplicationContext.Current.Services.DataTypeService);
+                                propValues[propKey] = propEditor.ValueEditor.ConvertDbToString(prop, propType, dataTypeService);
                             }
                             catch (InvalidOperationException)
                             {
@@ -239,15 +237,14 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
                         {
                             try
                             {
-                                // Create a fake property using the property abd stored value
+                                // Create a fake property using the property and stored value
                                 var prop = new Property(propType, propValues[propKey] == null ? null : propValues[propKey].ToString());
 
                                 // Lookup the property editor
                                 var propEditor = PropertyEditorResolver.Current.GetByAlias(propType.PropertyEditorAlias);
 
                                 // Get the editor to do it's conversion
-                                var newValue = propEditor.ValueEditor.ConvertDbToEditor(prop, propType,
-                                    ApplicationContext.Current.Services.DataTypeService);
+                                var newValue = propEditor.ValueEditor.ConvertDbToEditor(prop, propType, dataTypeService);
 
                                 // Store the value back
                                 propValues[propKey] = (newValue == null) ? null : JToken.FromObject(newValue);
