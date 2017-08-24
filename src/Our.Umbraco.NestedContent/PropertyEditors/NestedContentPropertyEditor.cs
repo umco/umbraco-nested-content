@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Our.Umbraco.NestedContent.Extensions;
 using Our.Umbraco.NestedContent.Helpers;
 using Umbraco.Core;
 using Umbraco.Core.Models;
@@ -107,7 +106,7 @@ namespace Our.Umbraco.NestedContent.PropertyEditors
             {
                 base.ConfigureForDisplay(preValues);
 
-                var asDictionary = preValues.AsPreValueDictionary();
+                var asDictionary = preValues.PreValuesAsDictionary.ToDictionary(x => x.Key, x => x.Value.Value);
                 if (asDictionary.ContainsKey("hideLabel"))
                 {
                     var boolAttempt = asDictionary["hideLabel"].TryConvertTo<bool>();

@@ -71,7 +71,7 @@ namespace Our.Umbraco.NestedContent.Helpers
             ConvertPreValueCollectionFromV011(preValues);
 
             // - get the content types prevalue as JArray
-            var preValuesAsDictionary = preValues.AsPreValueDictionary();
+            var preValuesAsDictionary = preValues.PreValuesAsDictionary.ToDictionary(x => x.Key, x => x.Value.Value);
             if (!preValuesAsDictionary.ContainsKey(ContentTypesPreValueKey) || string.IsNullOrEmpty(preValuesAsDictionary[ContentTypesPreValueKey]) != false)
             {
                 return;
@@ -92,7 +92,7 @@ namespace Our.Umbraco.NestedContent.Helpers
                 return;
             }
 
-            var persistedPreValuesAsDictionary = preValueCollection.AsPreValueDictionary();
+            var persistedPreValuesAsDictionary = preValueCollection.PreValuesAsDictionary.ToDictionary(x => x.Key, x => x.Value.Value);
 
             // do we have a "docTypeGuid" prevalue and no "contentTypes" prevalue?
             if (persistedPreValuesAsDictionary.ContainsKey("docTypeGuid") == false || persistedPreValuesAsDictionary.ContainsKey(ContentTypesPreValueKey))
@@ -229,8 +229,6 @@ WHERE [value] LIKE '%""ncAlias"":""{2}""%' OR  [value] LIKE '%""ncAlias"": ""{2}
                 db.Execute(sql1);
             }
         }
-
-        // TODO: RemapNestedContentNameTemplate?
 
         private static IEnumerable<JsonDbRow> GetPropertyDataRows(string docTypeAlias)
         {

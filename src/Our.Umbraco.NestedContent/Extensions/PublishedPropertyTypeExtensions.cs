@@ -27,7 +27,7 @@ namespace Our.Umbraco.NestedContent.Extensions
             }
 
             var preValueCollection = NestedContentHelper.GetPreValuesCollectionByDataTypeId(publishedProperty.DataTypeId);
-            var preValueDictionary = preValueCollection.AsPreValueDictionary();
+            var preValueDictionary = preValueCollection.PreValuesAsDictionary.ToDictionary(x => x.Key, x => x.Value.Value);
 
             int minItems, maxItems;
             return preValueDictionary.ContainsKey("minItems") &&
@@ -46,7 +46,7 @@ namespace Our.Umbraco.NestedContent.Extensions
                     var processedValue = new List<IPublishedContent>();
 
                     var preValueCollection = NestedContentHelper.GetPreValuesCollectionByDataTypeId(propertyType.DataTypeId);
-                    var preValueDictionary = preValueCollection.AsPreValueDictionary();
+                    var preValueDictionary = preValueCollection.PreValuesAsDictionary.ToDictionary(x => x.Key, x => x.Value.Value);
 
                     for (var i = 0; i < rawValue.Count; i++)
                     {
@@ -102,7 +102,7 @@ namespace Our.Umbraco.NestedContent.Extensions
                             i,
                             preview);
 
-                        if (PublishedContentModelFactoryResolver.HasCurrent)
+                        if (PublishedContentModelFactoryResolver.HasCurrent && PublishedContentModelFactoryResolver.Current.HasValue)
                         {
                             // Let the current model factory create a typed model to wrap our model
                             content = PublishedContentModelFactoryResolver.Current.Factory.CreateModel(content);
