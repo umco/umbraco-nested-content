@@ -46,7 +46,7 @@ The prevalue editor allows you to configure the following properties.
 
 | Member          | Type    | Description |
 |-----------------|---------|-------------|
-| Doc Types       | List    | Defines a list of doc types to use as data blue prints for this **Nested Content** instance. For each doc type you can provide the alias of the tab you wish to render (first tab is used by default if not set) as well as a template for generating list item labels using the syntax `{{propertyAlias}}`. If you would like to include the index position in the label, you can use `{{$index}}`. |
+| Doc Types       | List    | Defines a list of doc types to use as data blue prints for this **Nested Content** instance. For each doc type you can provide the alias of the tab you wish to render (first tab is used by default if not set). You can read about the Name Template [below](#name-template). |
 | Min Items       | Integer | Sets the minimum number of items that should be allowed in the list. If greater than `0`, **Nested Content** will pre-populate your list with the minimum amount of allowed items and prevent deleting items below this level. Defaults to `0`.
 | Max Items       | Integer | Sets the maximum number of items that should be allowed in the list. If greater than `0`, **Nested Content** will prevent new items being added to the list above this threshold. Defaults to `0`. |
 | Confirm Deletes | Boolean | Enabling this will require item deletions to require a confirmation before being deleted. Defaults to `true`. |
@@ -54,6 +54,12 @@ The prevalue editor allows you to configure the following properties.
 | Hide Label      | Boolean | Enabling this will hide the property editors label and expand the **Nested Content** property editor to the full with of the editor window. |
 
 Once your data type has been configured, simply set-up a property on your page doc type using your new data type and you are set to start editing.
+
+#### Name Template
+
+You can choose the template for generating list item labels using the syntax `{{propertyAlias}}`. If you would like to include the index position in the label, you can use `{{$index}}`.
+
+If your property links to a content node, you can use the Angular filter `{{ pickerAlias | ncNodeName }}` to show the node name rather than the node ID. If it's linking to a media node, you can use `{{ pickerAlias | ncMediaName }}`. These features were added in 0.4.0.
 
 ---
 
