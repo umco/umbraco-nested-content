@@ -210,3 +210,7 @@
 .nested-content__content .umb-editor-sub-header {
     margin-top: 0px;
 }
+
+.nested-content i {
+    margin-left: 0 !important;
+}
